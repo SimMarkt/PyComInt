@@ -1,3 +1,12 @@
 /.idea
 /venv
 /__pycache__
+/check.py
+/EL_H2Flowrate_in_NL_pro_min.txt
+/Modbus_Elec_2.py
+/Modbus_Elec.py
+/OPCUA_check.py
+/OPCUA_check_csv.py
+/OPCUA_Client.py
+/OPCUA_SQL_Client.py
+/opcua_nodes.csv
