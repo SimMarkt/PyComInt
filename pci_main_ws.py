@@ -14,7 +14,6 @@ import threading
 import win32serviceutil
 import win32service
 import win32event
-import yaml
 import logging
 
 from pci_el_control import el_control_func
@@ -75,5 +74,5 @@ class PyComIntService(win32serviceutil.ServiceFramework):
             time.sleep(10)
 
 if __name__ == "__main__":
-    print("PyComInt: Windows service for data transfer")
+    print("PyComInt: Windows service for data transfer and PEMEL control")
     win32serviceutil.HandleCommandLine(PyComIntService)

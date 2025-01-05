@@ -2,19 +2,18 @@
 # PyComInt: Communication interface of chemical plants
 # https://github.com/SimMarkt/PyComInt
 
-# config_sql.yaml: 
-# > Configuration for the SQL database (PostgreSQL)
+# config_opcua.yaml: 
+# > Configuration for the OPCUA server with the tagged nodes
 # > Application:    Power-to-Gas process with an proton exchange membrane electrolyzer (PEMEL) as Modbus client and a biological methanation unit (BM)
 #                   with a programmable logic controller providing an OPCUA server
 # 
 # ----------------------------------------------------------------------------------------------------------------
 
+# OPCUA server URL and credentials
+URL : ...
+USERNAME : OPCUA_user_1
+PASSWORD : ...
 
-# PostgreSQL connection parameters
-db_host : localhost   # IP Address: 127.0.0.1
-db_port : 5432
-db_name : Orbit
-db_user : python_opcua_user'       # 'postgres'
-db_password : ...
-db_table : orbit_data
-db_columns : ['timestamp', 'real_ph']
+# NodeID for the variables
+OPCUA_NODE_IDs : ["ns=7;s=::AsGlobalPV:real_Ph",
+                  "ns=7;s=::AsGlobalPV:real_Ph"]
