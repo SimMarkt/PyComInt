@@ -12,25 +12,33 @@
 import time
 import threading
 
-from pci_el_control import el_control_func
-from pci_data_trans import data_trans_func
+from src.pci_el_control import el_control_func
+from src.pci_data_trans import data_trans_func
+from.src.pci_utils import load_config
 
-def pemel_control():
-    """PEMEL control via OPCUA and Modbus"""
+def pemel_control(con_config):
+    """
+        PEMEL control via OPCUA and Modbus
+        :param con_config: Modbus, OPCUA, and SQL configuration
+    """
     while True:
-        el_control_func()
+        el_control_func(con_config)
         time.sleep(1)
 
-def data_storage():
-    """Data transfer via OPCUA and Modbus to SQL"""
+def data_storage(con_config):
+    """
+        Data transfer via OPCUA and Modbus to SQL
+        :param con_config: Modbus, OPCUA, and SQL configuration
+    """
     while True:
-        data_trans_func()
+        data_trans_func(con_config)
         time.sleep(10)
 
 def main():   
     try:
-        thread1s = threading.Thread(target=pemel_control, daemon=True)       # Thread with a 1s frequency, for PEMEL control
-        thread10s = threading.Thread(target=data_storage, daemon=True)       # Thread with a 10s frequency, for data storage
+        con_config = load_config()         # Load Modbus, OPCUA, and SQL configuration
+        thread1s = threading.Thread(target=pemel_control(con_config), daemon=True)       # Thread with a 1s frequency, for PEMEL control
+        thread10s = threading.Thread(target=data_storage(con_config), daemon=True)       # Thread with a 10s frequency, for data storage
         
         thread1s.start()
         thread10s.start()
