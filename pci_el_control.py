@@ -10,9 +10,6 @@ import opcua
 import pymodbus
 import yaml
 
-def data_trans_func2():
-    return print(f"Data transfer2 successfull!")
-
 def el_control_func():
     h2_flow_rate = 10
     el_current = 2
