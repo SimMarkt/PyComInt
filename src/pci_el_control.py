@@ -8,9 +8,10 @@
 
 import opcua
 import pymodbus
-import yaml
 
 def el_control_func():
+    """Data transfer via OPCUA and Modbus to SQL"""
+    
     h2_flow_rate = 10
     el_current = 2
     return print(f"PEMEL control successfull: {h2_flow_rate} Nl/min -> {el_current} A")

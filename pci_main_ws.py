@@ -18,6 +18,7 @@ import logging
 
 from src.pci_el_control import el_control_func
 from src.pci_data_trans import data_trans_func
+from.src.pci_utils import load_config
 
 class PyComIntService(win32serviceutil.ServiceFramework):
     _svc_name_ = "ThreadedPyComIntService"
@@ -42,9 +43,10 @@ class PyComIntService(win32serviceutil.ServiceFramework):
     def SvcDoRun(self):
         try:
             logging.info("Service is starting.")
+            con_config = load_config()         # Load Modbus, OPCUA, and SQL configuration
             # Start the threaded tasks
-            thread1s = threading.Thread(target=self.pemel_control)          # Thread with a 1s frequency, for PEMEL control
-            thread10s = threading.Thread(target=self.data_store)            # Thread with a 10s frequency, for data storage 
+            thread1s = threading.Thread(target=self.pemel_control(con_config))          # Thread with a 1s frequency, for PEMEL control
+            thread10s = threading.Thread(target=self.data_store(con_config))            # Thread with a 10s frequency, for data storage 
 
             thread1s.start()
             thread10s.start()
@@ -61,16 +63,25 @@ class PyComIntService(win32serviceutil.ServiceFramework):
             logging.error(f"Error during service execution: {e}")
             raise
 
-    def pemel_control(self):
-        """PEMEL control via OPCUA and Modbus"""
+    def pemel_control(self, con_config):
+        """
+            PEMEL control via OPCUA and Modbus
+            :param modbus_config: Modbus configuration
+            :param opcua_config: OPCUA server configuration
+        """
         while self.running:
-            el_control_func()
+            el_control_func(con_config)
             time.sleep(1)
 
-    def data_storage(self):
-        """Data transfer via OPCUA and Modbus to SQL"""
+    def data_storage(self, con_config):
+        """
+            Data transfer via OPCUA and Modbus to SQL
+            :param modbus_config: Modbus configuration
+            :param opcua_config: OPCUA server configuration
+            :param sql_config: SQL database configuration
+        """
         while self.running:
-            data_trans_func()
+            data_trans_func(con_config)
             time.sleep(10)
 
 if __name__ == "__main__":

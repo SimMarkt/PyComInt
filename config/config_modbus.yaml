@@ -14,9 +14,26 @@ IP_ADDRESS : ...  # Replace with the target IP, "10.0.6.65", "192.168.0.1"
 PORT : 502                  # Modbus TCP port
 SLAVE_ID : 0                # Slave ID
 BASE_REGISTER_OFFSET : 0    # Offset for base register
-READ_REGISTER : 0x8060      # Address of EL_Temp_In_Ac
-READ_START : 0x8060         # Start address to read
-READ_END : 0x8075           # End address to read
+PEMEL_STATUS :              # Contains information about the PEMEL status (Bit-wise binary encryption)
+  ADDRESS : 0x8060          # Address to read
+  BIT_0 : Error
+  BIT_1 : ModeOff
+  BIT_2 : ModeMan
+  BIT_3 : ModeAuto
+  BIT_4 : ESM Safety OK
+  BIT_5 : ' '
+  BIT_6 : Main fan ON
+  BIT_7 : Outer cooling fan ON
+  BIT_8 : Outer cooling pump ON
+  BIT_9 : Hydrogen cooling ON
+  BIT_10 : Hydrogen cooling temperature reached
+  BIT_11 : FWKS PropValve ON
+  BIT_12 : Pump FWKS ON
+  BIT_13 : Pump PWT ON
+  BIT_14 : Pump water processing
+  BIT_15 : ' '
+READ_START : 0x8062         # Start address to read continuous process values
+COUNT : 14                  # Number of registers to read continuous process values (from 0x8062 to 0x806F)
 WRITE_START : 0x8000        # Start address to write
 WRITE_END : 0x8002          # End address to write
 WRITE_REGISTER : 0x8002     # End address of EL_Current_SetPoint in [A]
