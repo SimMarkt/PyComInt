@@ -16,8 +16,8 @@ import win32service
 import win32event
 import logging
 
-from pci_el_control import el_control_func
-from pci_data_trans import data_trans_func
+from src.pci_el_control import el_control_func
+from src.pci_data_trans import data_trans_func
 
 class PyComIntService(win32serviceutil.ServiceFramework):
     _svc_name_ = "ThreadedPyComIntService"
