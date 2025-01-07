@@ -6,12 +6,9 @@
 # > implements the data transfer from the Modbus client (PEMEL) and OPCUA (BM) to the SQL database 
 # ----------------------------------------------------------------------------------------------------------------
 
-import yaml
 import pg8000
-from opcua import Client
-from pymodbus.client import ModbusTcpClient
 from datetime import datetime 
-from pci_utils import connect_opc_ua, read_node_values  
+from pci_utils import connect_modbus, connect_opc_ua, read_node_values  
 ########################################## import logging instead of prints  
 
 def convert_bits(value, modbus_config, bit_length=16):
@@ -101,16 +98,15 @@ def insert_data_into_db(values, sql_config):
         print(f"Error inserting data into PostgreSQL: {e}")
 
 def data_trans_func(con_config):
-    """Data transfer via OPCUA and Modbus to SQL"""
+    """
+        Data transfer via OPCUA and Modbus to SQL
+        :param con_config: Contains information about the configuration details of the communication
+    """
 
-    # Set up modbus connection
+    # Connect to Modbus client
     modbus_config = con_config['modbus']
-    modbus_client = ModbusTcpClient(modbus_config['IP_ADDRESS'], port=modbus_config['PORT'])
-    if not modbus_client.connect():
-        print("Unable to connect to Modbus server.")
-        return
-    print(f"Connected to Modbus server at {modbus_config['IP_ADDRESS']}:{modbus_config['PORT']}")
-
+    modbus_client = connect_modbus(modbus_config)
+    
     retries = 0     # counts the number of failed readings
     while True:
         # Read the Modbus register for PEMEL status "_st"
@@ -129,7 +125,7 @@ def data_trans_func(con_config):
             print(f"Read PEMEL status - {modbus_config['PEMEL_STATUS']['ADDRESS']}")
             status_one_hot = convert_bits(response_st.registers[0], modbus_config)
             retries = 0  # Reset retries on success
-
+        
         # Read the Modbus registers for PEMEL process values "_pv"
         response_pv = modbus_client.read_holding_registers(modbus_config['PROCESS_VALUES']['ADDRESS'] - modbus_config['BASE_REGISTER_OFFSET'],
                                                            count=modbus_config['PROCESS_VALUES']['COUNT'],  # Read all important registers
@@ -151,7 +147,7 @@ def data_trans_func(con_config):
     opcua_config = con_config['opcua'] 
     opcua_client = connect_opc_ua()  # Connect to the server with user credentials
     if opcua_client:
-        opcua_values = read_node_values(opcua_client, opcua_config['OPCUA_NODE_IDs'])  # Read the value of the specified node
+        opcua_values = read_node_values(opcua_client, opcua_config['OPCUA_NODE_IDs'])  # Read the value of the specified nodes
     
     # Write values into SQL database
     sql_config = con_config['sql']
