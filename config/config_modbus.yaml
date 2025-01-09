@@ -51,6 +51,7 @@ PROCESS_VALUES :
   REG_13 : EL_H2_Kuehler_Temp_Act     # H2 cooler temperature actual value [1/10 °C, 20° shift]
 WRITE_REGISTER : 0x8002     # End address of PEMEL power set point EL_Current_SetPoint in [A]
 MAX_RETRIES : 5             # Max retries on error
+RETRY_INTERVAL : 3          # Time in seconds to wait before retrying a connection.
 MAX_CURRENT : 52            # Maximum current of the electrolyzer in [A]
 MIN_CURRENT : 8			        # Minimum current of the electrolyzer in [A] - for safety reasons
 H2_FLOW_ARRAY : PEMEL_Current_H2Flowrate.txt    # File name with H2 flow rate values depending on the PEMEL power consumption

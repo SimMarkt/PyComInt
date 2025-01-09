@@ -34,6 +34,22 @@ def data_storage(con_config):
         data_trans_func(con_config)
         time.sleep(10)
 
+def supervisor(opcua_connection, modbus_connection, sql_connection):
+    while True:
+        if not opcua_connection.is_connected():
+            print("Reconnecting OPC UA...")
+            opcua_connection.connect()
+
+        if not modbus_connection.is_connected():
+            print("Reconnecting Modbus...")
+            modbus_connection.connect()
+
+        if not sql_connection.is_connected():
+            print("Reconnecting SQL...")
+            sql_connection.connect()
+
+        time.sleep(10)  # Check every 10 seconds
+
 def main():   
     try:
         con_config = load_config()         # Load Modbus, OPCUA, and SQL configuration

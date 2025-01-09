@@ -90,8 +90,8 @@ def el_control_func(con_config):
             # Activate the specific bit
             write_result = modbus_client.write_register(modbus_config['WRITE_REGISTER'], set_current) # 15 A
             if write_result.isError():
-                print(f"Error writing value {set_current} to register {0x8000}")
+                print(f"Error writing value {set_current} to register {modbus_config['WRITE_REGISTER']}")
             else:
-                print(f"Successfully wrote {set_current} to register {0x8000}")
+                print(f"Successfully wrote {set_current} to register {modbus_config['WRITE_REGISTER']}")
 
-    return print(f"PEMEL control successfull: {h2_flow_rate} Nl/min -> {el_current} A")
+    return print(f"PEMEL control successfull: {set_h2_flow} Nl/min -> {set_current} A")

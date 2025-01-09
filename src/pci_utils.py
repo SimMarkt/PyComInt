@@ -10,6 +10,63 @@ import yaml
 from opcua import Client
 from pymodbus.client import ModbusTcpClient
 
+class OPCUAConnection:
+    def __init__(self):
+        # Load OPCUA configuration
+        with open("config/config_opcua.yaml", "r") as env_file:
+                self.opcua_config = yaml.safe_load(env_file)
+        self.client = None
+
+    def connect(self):
+        try:
+            self.client = Client(self.opcua_config['URL'])
+            # Set user credentials directly
+            self.client.set_user(self.opcua_config['USERNAME'])
+            self.client.set_password(self.opcua_config['PASSWORD'])
+
+            self.client.connect()
+            print(f"Connected to {self.opcua_config['URL']} as {self.opcua_config['USERNAME']}")
+        except Exception as e:
+            print(f"OPC UA connection failed: {e}")
+            self.client = None  # Mark as unavailable
+
+    def is_connected(self):
+        return self.client is not None
+    
+class ModbusConnection:
+    def __init__(self):
+       # Load Modbus configuration
+        with open("config/config_modbus.yaml", "r") as env_file:
+            self.modbus_config = yaml.safe_load(env_file)
+        self.client = None
+
+    def connect(self):
+        try:
+            """Connect to Modbus client with authentication"""
+            self.client = ModbusTcpClient(self.modbus_config['IP_ADDRESS'], port=self.modbus_config['PORT'])
+
+            
+            if not self.client.connect():
+                print("Unable to connect to Modbus server.")
+                return
+            print(f"Connected to Modbus server at {modbus_config['IP_ADDRESS']}:{modbus_config['PORT']}")
+
+            self.client = Client(self.opcua_config['URL'])
+            # Set user credentials directly
+            self.client.set_user(self.opcua_config['USERNAME'])
+            self.client.set_password(self.opcua_config['PASSWORD'])
+
+            self.client.connect()
+            print(f"Connected to {self.opcua_config['URL']} as {self.opcua_config['USERNAME']}")
+        except Exception as e:
+            print(f"OPC UA connection failed: {e}")
+            self.client = None  # Mark as unavailable
+
+    def is_connected(self):
+        return self.client is not None
+    
+
+
 def load_config():
     # load Modbus configuration
     with open("config/config_modbus.yaml", "r") as env_file:
