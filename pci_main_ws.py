@@ -18,7 +18,7 @@ import logging
 
 from src.pci_el_control import el_control_func
 from src.pci_data_trans import data_trans_func
-from.src.pci_utils import load_config
+from.src.pci_connections import load_config
 
 class PyComIntService(win32serviceutil.ServiceFramework):
     _svc_name_ = "ThreadedPyComIntService"

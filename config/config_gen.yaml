@@ -1,0 +1,14 @@
+# ----------------------------------------------------------------------------------------------------------------
+# PyComInt: Communication interface of chemical plants
+# https://github.com/SimMarkt/PyComInt
+
+# config_gen.yaml: 
+# > Configuration for main connection tasks
+# > Application:    Power-to-Gas process with an proton exchange membrane electrolyzer (PEMEL) as Modbus client and a biological methanation unit (BM)
+#                   with a programmable logic controller providing an OPCUA server
+# 
+# ----------------------------------------------------------------------------------------------------------------
+
+PEMEL_CONTROL_INTERVAL : 1    # Interval for PEMEL control in [s]
+DATA_STORAGE_INTERVAL : 10    # Data storage interval in [s]
+RECONNECTION_INTERVAL: 10     # Reconnection interval of the supervisor to reset the connection of the different clients

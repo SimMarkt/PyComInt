@@ -11,53 +11,63 @@
 
 import time
 import threading
-
+import yaml
 from src.pci_el_control import el_control_func
 from src.pci_data_trans import data_trans_func
-from.src.pci_utils import load_config
+from.src.pci_connections import OPCUAConnection, ModbusConnection, SQLConnection
 
-def pemel_control(con_config):
+def pemel_control(control_interval, modbus_connection, opcua_connection):
     """
         PEMEL control via OPCUA and Modbus
-        :param con_config: Modbus, OPCUA, and SQL configuration
+        :param control_interval: Interval for PEMEL control in [s]
     """
     while True:
-        el_control_func(con_config)
-        time.sleep(1)
+        el_control_func(modbus_connection, opcua_connection)
+        time.sleep(control_interval)
 
-def data_storage(con_config):
+def data_storage(storage_interval, modbus_connection, opcua_connection, sql_connection):
     """
         Data transfer via OPCUA and Modbus to SQL
-        :param con_config: Modbus, OPCUA, and SQL configuration
+        :param storage_interval: Data storage interval in [s]
     """
     while True:
-        data_trans_func(con_config)
-        time.sleep(10)
+        data_trans_func(modbus_connection, opcua_connection, sql_connection)
+        time.sleep(storage_interval)
 
-def supervisor(opcua_connection, modbus_connection, sql_connection):
+def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_connection):
     while True:
+        if not modbus_connection.is_connected():
+            print("Reconnecting Modbus...")             #####################################################################
+            modbus_connection.connect()
+        
         if not opcua_connection.is_connected():
-            print("Reconnecting OPC UA...")
+            print("Reconnecting OPC UA...")             #####################################################################
             opcua_connection.connect()
 
-        if not modbus_connection.is_connected():
-            print("Reconnecting Modbus...")
-            modbus_connection.connect()
-
         if not sql_connection.is_connected():
-            print("Reconnecting SQL...")
+            print("Reconnecting SQL...")                #####################################################################
             sql_connection.connect()
 
-        time.sleep(10)  # Check every 10 seconds
+        time.sleep(reconnection_interval)  # Check every 10 seconds
 
-def main():   
+def main(): 
+    # Load general configuration
+    with open("config/config_gen.yaml", "r") as env_file:
+        gen_config = yaml.safe_load(env_file)
+    
+    # Initialize connections    
+    modbus_connection = ModbusConnection()
+    opcua_connection = OPCUAConnection()
+    sql_connection = SQLConnection()
+ 
     try:
-        con_config = load_config()         # Load Modbus, OPCUA, and SQL configuration
-        thread1s = threading.Thread(target=pemel_control(con_config), daemon=True)       # Thread with a 1s frequency, for PEMEL control
-        thread10s = threading.Thread(target=data_storage(con_config), daemon=True)       # Thread with a 10s frequency, for data storage
+        thread_con = threading.Thread(target=pemel_control(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)      # Thread for PEMEL control
+        thread_dat = threading.Thread(target=data_storage(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for data storage
+        thread_sup = threading.Thread(target=supervisor(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for connection supervision
         
-        thread1s.start()
-        thread10s.start()
+        thread_con.start()
+        thread_dat.start()
+        thread_sup.start()
         
         while True:  # Keep the main thread running
             time.sleep(0.1)
