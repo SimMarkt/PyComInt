@@ -34,7 +34,8 @@ PyComInt/
 │   └── threads.py
 │
 ├── pci_main.py
-└── pci_main_ws.py
+├── pci_main_ws.py
+└── requirements.txt
 
 ```
 
@@ -69,6 +70,7 @@ Contains source code for the different threads and connection wrappers:
 1. Configure the project using the YAML files located in the `config/` directory.
 2. Run `pci_main.py` for a standard multi-threaded data transfer operation.
 3. Optionally, set up `pci_main_ws.py` as a Windows service for seamless background execution.
+4. The code furthermore creates a log file `PyComInt.log` for debugging and monitoring. 
 
 ---
 
@@ -78,14 +80,16 @@ Contains source code for the different threads and connection wrappers:
 - Required libraries:
   - `pymodbus`
   - `opcua`
-  - `psycopg2`
-  - `pyyaml`
+  - `PyYAML`
+  - `pywin32`
+  - `cryptography`
+  - `pg8000`
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Feel free to submit issues, feature requests, or pull requests on [GitHub](https://github.com/SimMarkt/PyComInt).
+Contributions are welcome! Feel free to submit issues on [GitHub](https://github.com/SimMarkt/PyComInt).
 
 ---
 
