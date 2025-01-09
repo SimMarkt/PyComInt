@@ -32,11 +32,25 @@ PEMEL_STATUS :              # Contains information about the PEMEL status (Bit-w
   BIT_13 : Pump PWT ON
   BIT_14 : Pump water processing
   BIT_15 : ' '
-READ_START : 0x8062         # Start address to read continuous process values
-COUNT : 14                  # Number of registers to read continuous process values (from 0x8062 to 0x806F)
-WRITE_START : 0x8000        # Start address to write
-WRITE_END : 0x8002          # End address to write
-WRITE_REGISTER : 0x8002     # End address of EL_Current_SetPoint in [A]
+PROCESS_VALUES :
+  ADDRESS : 0x8062         # Start address to read continuous process values
+  COUNT : 14                  # Number of registers to read continuous process values (from 0x8062 to 0x806F)
+  REG_0 : EL_Power_Act               # Power actual value [W]
+  REG_1 : EL_Current_Act             # Current actual value [1/10 A]
+  REG_2 : EL_H2_Pressure_Act         # Hydrogen pressure actual value [mBar]
+  REG_3 : EL_Conductance_Act         # Conductance actual value [1/1000 μS]
+  REG_4 : EL_Temp_In_Act             # Inlet temperature actual value [1/10 °C, 20° shift]
+  REG_5 : EL_EBM_FWKS_PropVentil     # Set point proportional valve FWKS cooler [1/10 %]
+  REG_6 : EL_CalcH2Flow_Act          # Hydrogen flow actual value [1/10 NL/min]
+  REG_7 : EL_CalcH2Volume_Sum        # Hydrogen actual value produced volume [NL]
+  REG_8 : EL_ELM1_Temp_Out_Act       # ELM1 outlet temperature actual value [1/10 °C, 20° shift]
+  REG_9 : EL_ELM2_Temp_Out_Act       # ELM2 outlet temperature actual value [1/10 °C, 20° shift]
+  REG_10 : EL_ELM3_Temp_Out_Act       # ELM3 outlet temperature actual value [1/10 °C, 20° shift]
+  REG_11 : EL_ELM4_Temp_Out_Act       # ELM4 outlet temperature actual value [1/10 °C, 20° shift]
+  REG_12 : EL_ELM5_Temp_Out_Act       # ELM5 outlet temperature actual value [1/10 °C, 20° shift]
+  REG_13 : EL_H2_Kuehler_Temp_Act     # H2 cooler temperature actual value [1/10 °C, 20° shift]
+WRITE_REGISTER : 0x8002     # End address of PEMEL power set point EL_Current_SetPoint in [A]
 MAX_RETRIES : 5             # Max retries on error
 MAX_CURRENT : 52            # Maximum current of the electrolyzer in [A]
-MIN_CURRENT : 8			        # Minimum current of the electrolyzer in [A]
+MIN_CURRENT : 8			        # Minimum current of the electrolyzer in [A] - for safety reasons
+H2_FLOW_ARRAY : PEMEL_Current_H2Flowrate.txt    # File name with H2 flow rate values depending on the PEMEL power consumption

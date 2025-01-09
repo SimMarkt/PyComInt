@@ -50,24 +50,35 @@ def connect_opc_ua(opcua_config):
     except Exception as e:
         print(f"Error connecting to server: {e}")
         return None
+    
+def convert_bits(value, modbus_config, bit_length=16):
+    """
+        Display a binary number, highlight which bits are active, and interpret their meanings based on a YAML config.
+        Also returns a one-hot encoded array of the bits.
+        :param value (int): The value read from the Modbus register.
+        :param modbus_config (dict): A dictionary loaded from a YAML configuration file with bit interpretations.
+        :bit_length (int): The length of the binary number (default is 16).
+        :return status_one_hot (list): A one-hot encoded array representing the active/inactive state of each bit.
+    """
+    # # Convert the value to a binary string with leading zeros
+    # binary_representation = f"{value:0{bit_length}b}"
+    # print(f"Binary representation: {binary_representation}")
+    # print("Bit positions:          " + " ".join(f"{i:>2}" for i in range(bit_length - 1, -1, -1)))
 
-def read_pemel_status(modbus_client, modbus_config)  :      
-    """Read the Modbus register for PEMEL status _st"""
-    response_st = modbus_client.read_holding_registers(modbus_config['PEMEL_STATUS']['ADDRESS'] - modbus_config['BASE_REGISTER_OFFSET'],
-                                                        count=1,  # PEMEL status is located in one register
-                                                        slave=modbus_config['SLAVE_ID'])  # Updated argument for slave ID
+    status_config = modbus_config.get("PEMEL_STATUS", {})   # extract the bit interpretation
+    one_hot = [0] * bit_length  # One-hot encoded array for the bit values
 
-    if response_st.isError():
-        print(f"Error reading PEMEL status - {modbus_config['PEMEL_STATUS']['ADDRESS']}: {response_st}")
-        retries += 1
-        if retries >= modbus_config['MAX_RETRIES']:
-            print("Max retries reached, exiting.")
-            break
-    else:
-        # Extract and display the value
-        print(f"Read PEMEL status - {modbus_config['PEMEL_STATUS']['ADDRESS']}")
-        status_one_hot = convert_bits(response_st.registers[0], modbus_config)
-        retries = 0  # Reset retries on success)
+    print("PEMEL status:")
+    for i in range(bit_length):
+        bit_status = (value >> i) & 1  # Extract each bit
+        one_hot[i] = bit_status       # Update the one-hot array
+
+        # Get the bit description from the Modbus config
+        bit_description = status_config.get(f"BIT_{i}", "Undefined")
+        status = "Active" if bit_status else "Inactive"
+        print(f"Bit {i}: {status} - {bit_description}")
+    
+    return one_hot
 
 def read_node_values(client, node_ids):
     """
