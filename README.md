@@ -36,6 +36,8 @@ PyComInt/
 ├── pci_main.py
 └── pci_main_ws.py
 
+```
+
 ### `config/`
 Contains configuration files for various components of the project:
 - **`config/config_gen.yaml`**: General configuration for main connection tasks and logging.
