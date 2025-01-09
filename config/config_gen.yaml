@@ -2,16 +2,10 @@
 # PyComInt: Communication interface for chemical plants
 # https://github.com/SimMarkt/PyComInt
 
-# config_sql.yaml: 
-# > Configuration for the SQL database (PostgreSQL)
+# config_gen.yaml: 
+# > Configuration for main connection tasks and logging 
 # ----------------------------------------------------------------------------------------------------------------
 
-
-# PostgreSQL connection parameters
-DB_HOST : localhost   # IP Address: 127.0.0.1
-DB_PORT : 5432
-DB_NAME : Orbit
-DB_USER : python_opcua_user'       # 'postgres'
-DB_PASSWORD : ...
-DB_TABLE : orbit_data
-DB_COLUMS : ['timestamp', 'real_ph']
+PEMEL_CONTROL_INTERVAL : 1    # Interval for PEMEL control in [s]
+DATA_STORAGE_INTERVAL : 10    # Data storage interval in [s]
+RECONNECTION_INTERVAL: 10     # Reconnection interval of the supervisor to reset the connection of the different clients

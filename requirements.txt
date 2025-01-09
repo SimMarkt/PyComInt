@@ -3,3 +3,4 @@ pymodbus==3.8.0
 opcua==0.98.13
 pywin32==308
 cryptography==44.0.0
+pg8000==1.31.2

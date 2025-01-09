@@ -1,56 +1,83 @@
 # ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface of chemical plants
+# PyComInt: Communication interface for chemical plants
 # https://github.com/SimMarkt/PyComInt
 
 # pci_main.py: 
-# > Main programming script that performs data transfer between an OPCUA server, a Modbus client, and a SQL database
-# > Application:    Power-to-Gas process with an proton exchange membrane electrolyzer (PEMEL) as Modbus client and a biological methanation unit (BM)
-#                   with a programmable logic controller providing an OPCUA server
+# > Main programming script that performs multi-threaded data transfer between an OPCUA server, a Modbus client, and a SQL database
+# > Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
+#                with a programmable logic controller (PLC) providing an OPC UA server.
 # 
 # ----------------------------------------------------------------------------------------------------------------
 
 import time
 import threading
+import yaml
+import logging
 
-from src.pci_el_control import el_control_func
-from src.pci_data_trans import data_trans_func
-from.src.pci_utils import load_config
+from src.pci_threads import pemel_control, data_storage, supervisor
+from src.pci_modbus import ModbusConnection
+from src.pci_opcua import OPCUAConnection
+from src.pci_sql import SQLConnection
 
-def pemel_control(con_config):
-    """
-        PEMEL control via OPCUA and Modbus
-        :param con_config: Modbus, OPCUA, and SQL configuration
-    """
-    while True:
-        el_control_func(con_config)
-        time.sleep(1)
+def setup_logging():
+    """Set up logging to write messages to a file."""
+    logging.basicConfig(
+        filename='PyComInt.log',                                # Log file name
+        level=logging.INFO,                                     # Log level
+        format="%(asctime)s - %(levelname)s - %(message)s",     # Log format
+        datefmt="%Y-%m-%d %H:%M:%S"                             # Date format
+    )
 
-def data_storage(con_config):
-    """
-        Data transfer via OPCUA and Modbus to SQL
-        :param con_config: Modbus, OPCUA, and SQL configuration
-    """
-    while True:
-        data_trans_func(con_config)
-        time.sleep(10)
-
-def main():   
+def main(): 
+    # Load general configuration
     try:
-        con_config = load_config()         # Load Modbus, OPCUA, and SQL configuration
-        thread1s = threading.Thread(target=pemel_control(con_config), daemon=True)       # Thread with a 1s frequency, for PEMEL control
-        thread10s = threading.Thread(target=data_storage(con_config), daemon=True)       # Thread with a 10s frequency, for data storage
+        with open("config/config_gen.yaml", "r") as env_file:
+            gen_config = yaml.safe_load(env_file)
+        logging.info("Loaded general configuration successfully.")
+    except Exception as e:
+        logging.error(f"Error loading configuration: {e}")
+        return
+    
+    # Initialize connections    
+    try:
+        modbus_connection = ModbusConnection()
+        opcua_connection = OPCUAConnection()
+        sql_connection = SQLConnection()
+        logging.info("Initialized all connections successfully.")
+    except Exception as e:
+        logging.error(f"Error initializing connections: {e}")
+        return
+ 
+    try:
+        thread_con = threading.Thread(target=pemel_control(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)      # Thread for PEMEL control
+        thread_dat = threading.Thread(target=data_storage(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for data storage
+        thread_sup = threading.Thread(target=supervisor(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for connection supervision
         
-        thread1s.start()
-        thread10s.start()
+        thread_con.start()
+        logging.info("PEMEL control thread started.")
+        thread_dat.start()
+        logging.info("Data storage thread started.")
+        thread_sup.start()
+        logging.info("Supervisor thread started.")
         
         while True:  # Keep the main thread running
             time.sleep(0.1)
     except KeyboardInterrupt:
-        print("Exiting on user request.")
+        logging.info("Exiting on user request (KeyboardInterrupt).")
     finally:
-        print("Connections closed.")
-
+        # Clean up connections
+        modbus_connection.client.close()
+        opcua_connection.client.disconnect()
+        sql_connection.close()
+        logging.info("Connections closed successfully.")
 
 if __name__ == "__main__":
-    print("PyComInt: Script for data transfer and PEMEL control")
+    # Set up logging
+    setup_logging()
+
+    # Get the current timestamp
+    logging.info("---------------------------------------------------------------------------------------------------------")
+    logging.info(f"Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
+
+    # Run the main function
     main()

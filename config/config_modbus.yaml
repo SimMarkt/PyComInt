@@ -1,16 +1,13 @@
 # ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface of chemical plants
+# PyComInt: Communication interface for chemical plants
 # https://github.com/SimMarkt/PyComInt
 
 # config_modbus.yaml: 
 # > Configuration for the Modbus client and some notes for decrypting the bit-wise signals
-# > Application:    Power-to-Gas process with an proton exchange membrane electrolyzer (PEMEL) as Modbus client and a biological methanation unit (BM)
-#                   with a programmable logic controller providing an OPCUA server
-# 
 # ----------------------------------------------------------------------------------------------------------------
 
 # Configuration parameters for modbus
-IP_ADDRESS : ...  # Replace with the target IP, "10.0.6.65", "192.168.0.1"
+IP_ADDRESS : ...            # Replace with the target IP, "10.0.6.65", "192.168.0.1"
 PORT : 502                  # Modbus TCP port
 SLAVE_ID : 0                # Slave ID
 BASE_REGISTER_OFFSET : 0    # Offset for base register
@@ -51,6 +48,7 @@ PROCESS_VALUES :
   REG_13 : EL_H2_Kuehler_Temp_Act     # H2 cooler temperature actual value [1/10 °C, 20° shift]
 WRITE_REGISTER : 0x8002     # End address of PEMEL power set point EL_Current_SetPoint in [A]
 MAX_RETRIES : 5             # Max retries on error
+RETRY_INTERVAL : 2          # Time in seconds to wait before retrying a connection.
 MAX_CURRENT : 52            # Maximum current of the electrolyzer in [A]
 MIN_CURRENT : 8			        # Minimum current of the electrolyzer in [A] - for safety reasons
 H2_FLOW_ARRAY : PEMEL_Current_H2Flowrate.txt    # File name with H2 flow rate values depending on the PEMEL power consumption
