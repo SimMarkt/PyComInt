@@ -8,6 +8,7 @@
 
 import yaml
 from opcua import Client
+from pymodbus.client import ModbusTcpClient
 
 def load_config():
     # load Modbus configuration
@@ -26,6 +27,15 @@ def load_config():
 
     return con_config
 
+def connect_modbus(modbus_config):
+    """Connect to Modbus client with authentication"""
+    modbus_client = ModbusTcpClient(modbus_config['IP_ADDRESS'], port=modbus_config['PORT'])
+    if not modbus_client.connect():
+        print("Unable to connect to Modbus server.")
+        return
+    print(f"Connected to Modbus server at {modbus_config['IP_ADDRESS']}:{modbus_config['PORT']}")
+    return modbus_client
+
 def connect_opc_ua(opcua_config):
     """Connect to OPC UA server with authentication"""
     client = Client(opcua_config['URL'])
@@ -40,7 +50,25 @@ def connect_opc_ua(opcua_config):
     except Exception as e:
         print(f"Error connecting to server: {e}")
         return None
-    
+
+def read_pemel_status(modbus_client, modbus_config)  :      
+    """Read the Modbus register for PEMEL status _st"""
+    response_st = modbus_client.read_holding_registers(modbus_config['PEMEL_STATUS']['ADDRESS'] - modbus_config['BASE_REGISTER_OFFSET'],
+                                                        count=1,  # PEMEL status is located in one register
+                                                        slave=modbus_config['SLAVE_ID'])  # Updated argument for slave ID
+
+    if response_st.isError():
+        print(f"Error reading PEMEL status - {modbus_config['PEMEL_STATUS']['ADDRESS']}: {response_st}")
+        retries += 1
+        if retries >= modbus_config['MAX_RETRIES']:
+            print("Max retries reached, exiting.")
+            break
+    else:
+        # Extract and display the value
+        print(f"Read PEMEL status - {modbus_config['PEMEL_STATUS']['ADDRESS']}")
+        status_one_hot = convert_bits(response_st.registers[0], modbus_config)
+        retries = 0  # Reset retries on success)
+
 def read_node_values(client, node_ids):
     """
         Read the values of multiple nodes using their NodeIDs.
