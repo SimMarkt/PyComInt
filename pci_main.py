@@ -1,64 +1,52 @@
 # ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface of chemical plants
+# PyComInt: Communication interface for chemical plants
 # https://github.com/SimMarkt/PyComInt
 
 # pci_main.py: 
-# > Main programming script that performs data transfer between an OPCUA server, a Modbus client, and a SQL database
-# > Application:    Power-to-Gas process with an proton exchange membrane electrolyzer (PEMEL) as Modbus client and a biological methanation unit (BM)
-#                   with a programmable logic controller providing an OPCUA server
+# > Main programming script that performs multi-threaded data transfer between an OPCUA server, a Modbus client, and a SQL database
+# > Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
+#                with a programmable logic controller (PLC) providing an OPC UA server.
 # 
 # ----------------------------------------------------------------------------------------------------------------
 
 import time
 import threading
 import yaml
-from src.pci_el_control import el_control_func
-from src.pci_data_trans import data_trans_func
-from.src.pci_connections import OPCUAConnection, ModbusConnection, SQLConnection
+import logging
 
-def pemel_control(control_interval, modbus_connection, opcua_connection):
-    """
-        PEMEL control via OPCUA and Modbus
-        :param control_interval: Interval for PEMEL control in [s]
-    """
-    while True:
-        el_control_func(modbus_connection, opcua_connection)
-        time.sleep(control_interval)
+from src.pci_threads import pemel_control, data_storage, supervisor
+from src.pci_modbus import ModbusConnection
+from src.pci_opcua import OPCUAConnection
+from src.pci_sql import SQLConnection
 
-def data_storage(storage_interval, modbus_connection, opcua_connection, sql_connection):
-    """
-        Data transfer via OPCUA and Modbus to SQL
-        :param storage_interval: Data storage interval in [s]
-    """
-    while True:
-        data_trans_func(modbus_connection, opcua_connection, sql_connection)
-        time.sleep(storage_interval)
-
-def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_connection):
-    while True:
-        if not modbus_connection.is_connected():
-            print("Reconnecting Modbus...")             #####################################################################
-            modbus_connection.connect()
-        
-        if not opcua_connection.is_connected():
-            print("Reconnecting OPC UA...")             #####################################################################
-            opcua_connection.connect()
-
-        if not sql_connection.is_connected():
-            print("Reconnecting SQL...")                #####################################################################
-            sql_connection.connect()
-
-        time.sleep(reconnection_interval)  # Check every 10 seconds
+def setup_logging():
+    """Set up logging to write messages to a file."""
+    logging.basicConfig(
+        filename='PyComInt.log',                                # Log file name
+        level=logging.INFO,                                     # Log level
+        format="%(asctime)s - %(levelname)s - %(message)s",     # Log format
+        datefmt="%Y-%m-%d %H:%M:%S"                             # Date format
+    )
 
 def main(): 
     # Load general configuration
-    with open("config/config_gen.yaml", "r") as env_file:
-        gen_config = yaml.safe_load(env_file)
+    try:
+        with open("config/config_gen.yaml", "r") as env_file:
+            gen_config = yaml.safe_load(env_file)
+        logging.info("Loaded general configuration successfully.")
+    except Exception as e:
+        logging.error(f"Error loading configuration: {e}")
+        return
     
     # Initialize connections    
-    modbus_connection = ModbusConnection()
-    opcua_connection = OPCUAConnection()
-    sql_connection = SQLConnection()
+    try:
+        modbus_connection = ModbusConnection()
+        opcua_connection = OPCUAConnection()
+        sql_connection = SQLConnection()
+        logging.info("Initialized all connections successfully.")
+    except Exception as e:
+        logging.error(f"Error initializing connections: {e}")
+        return
  
     try:
         thread_con = threading.Thread(target=pemel_control(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)      # Thread for PEMEL control
@@ -66,17 +54,30 @@ def main():
         thread_sup = threading.Thread(target=supervisor(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for connection supervision
         
         thread_con.start()
+        logging.info("PEMEL control thread started.")
         thread_dat.start()
+        logging.info("Data storage thread started.")
         thread_sup.start()
+        logging.info("Supervisor thread started.")
         
         while True:  # Keep the main thread running
             time.sleep(0.1)
     except KeyboardInterrupt:
-        print("Exiting on user request.")
+        logging.info("Exiting on user request (KeyboardInterrupt).")
     finally:
-        print("Connections closed.")
-
+        # Clean up connections
+        modbus_connection.client.close()
+        opcua_connection.client.disconnect()
+        sql_connection.close()
+        logging.info("Connections closed successfully.")
 
 if __name__ == "__main__":
-    print("PyComInt: Script for data transfer and PEMEL control")
+    # Set up logging
+    setup_logging()
+
+    # Get the current timestamp
+    logging.info("---------------------------------------------------------------------------------------------------------")
+    logging.info(f"Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
+
+    # Run the main function
     main()

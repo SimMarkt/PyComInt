@@ -1,12 +1,9 @@
 # ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface of chemical plants
+# PyComInt: Communication interface for chemical plants
 # https://github.com/SimMarkt/PyComInt
 
 # config_modbus.yaml: 
 # > Configuration for the Modbus client and some notes for decrypting the bit-wise signals
-# > Application:    Power-to-Gas process with an proton exchange membrane electrolyzer (PEMEL) as Modbus client and a biological methanation unit (BM)
-#                   with a programmable logic controller providing an OPCUA server
-# 
 # ----------------------------------------------------------------------------------------------------------------
 
 # Configuration parameters for modbus
