@@ -23,7 +23,7 @@ from src.pci_opcua import OPCUAConnection
 from src.pci_sql import SQLConnection
 
 def setup_logging():
-    """Set up logging to write messages to a file."""
+    """Sets up logging to write messages to a file."""
     logging.basicConfig(
         filename='PyComInt.log',                                # Log file name
         level=logging.INFO,                                     # Log level

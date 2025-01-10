@@ -23,7 +23,7 @@ class SQLConnection:
 
     def connect(self):
         """
-            Establish the connection to the OPCUA server.
+            Establishes the connection to the OPCUA server.
         """
         try:
             # Connect to PostgreSQL using pg8000
@@ -40,14 +40,14 @@ class SQLConnection:
 
     def is_connected(self):
         """
-            Check if the SQL connection is active.
+            Checks if the SQL connection is active.
             :return: True if connected, False otherwise.
         """
         return self.connection is not None
     
     def insert_data(self, values):
         """
-            Insert data into PostgreSQL database using pg8000
+            Inserts data into PostgreSQL database using pg8000
             :param values: Process values to store in the SQL database
         """
         try:

@@ -11,7 +11,7 @@ import logging
 
 def pemel_control(control_interval, modbus_connection, opcua_connection):
     """
-        PEMEL control via OPCUA and Modbus
+        Contains the thread function forPEMEL control via OPCUA and Modbus
         :param control_interval: Interval for PEMEL control in [s]
     """
     while True:
@@ -20,7 +20,7 @@ def pemel_control(control_interval, modbus_connection, opcua_connection):
 
 def el_control_func(opcua_connection, modbus_connection):
     """
-        PEMEL control via OPCUA and Modbus
+        Controls PEMEL via OPCUA and Modbus
         :param opcua_connection: Object with OPCUA connection information
         :param modbus_connection: Object with Modbus connection information
     """
@@ -40,7 +40,7 @@ def el_control_func(opcua_connection, modbus_connection):
 
 def data_storage(storage_interval, modbus_connection, opcua_connection, sql_connection):
     """
-        Data transfer via OPCUA and Modbus to SQL
+        Contains the thread function for data transfer via OPCUA and Modbus to SQL
         :param storage_interval: Data storage interval in [s]
     """
     while True:
@@ -49,7 +49,7 @@ def data_storage(storage_interval, modbus_connection, opcua_connection, sql_conn
 
 def data_trans_func(modbus_connection, opcua_connection, sql_connection):
     """
-        Data transfer via OPCUA and Modbus to SQL
+        Transfers data via OPCUA and Modbus to SQL
         :param opcua_connection: Object with OPCUA connection information
         :param modbus_connection: Object with Modbus connection information
         :param sql_connection: Object with SQL connection information
@@ -72,6 +72,13 @@ def data_trans_func(modbus_connection, opcua_connection, sql_connection):
         logging.error(f"Error in data transfer function: {e}")
 
 def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_connection):
+    """
+        Reconnects to the servers and clients if the connection fails 
+        :param reconnection_interval: Interval for reconnection
+        :param opcua_connection: Object with OPCUA connection information
+        :param modbus_connection: Object with Modbus connection information
+        :param sql_connection: Object with SQL connection information
+    """
     while True:
         try:
             if not modbus_connection.is_connected():
