@@ -3,7 +3,7 @@
 # https://github.com/SimMarkt/PyComInt
 
 # pci_main_ws.py: 
-# > Main programming script that sets up a windows service performing data transfer between an OPCUA server, a Modbus client, and a SQL database
+# > Main programming script that sets up a windows service performing data transfer between an OPC UA server, a Modbus client, and a SQL database
 # > Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
 #                with a programmable logic controller (PLC) providing an OPC UA server.
 # 
@@ -23,7 +23,7 @@ from src.pci_opcua import OPCUAConnection
 from src.pci_sql import SQLConnection
 
 def setup_logging():
-    """Set up logging to write messages to a file."""
+    """Sets up logging to write messages to a file."""
     logging.basicConfig(
         filename='PyComInt.log',                                # Log file name
         level=logging.INFO,                                     # Log level
@@ -88,7 +88,6 @@ if __name__ == "__main__":
     # Set up logging
     setup_logging()
 
-    # Get the current timestamp
     logging.info("------------------------------------------------------------------------------------------------------------------------------")
     logging.info(f"Starting PyComInt as a windows service: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
 
