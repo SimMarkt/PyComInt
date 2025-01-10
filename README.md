@@ -23,8 +23,8 @@ Python communication interface for chemical plants connecting different process 
 ### Application
 
 PyComInt has been applied to a **Power-to-Gas** process, integrating:
-- A **proton exchange membrane electrolyzer (PEMEL)** as a Modbus client.
-- A **methanation unit (METH)** with a programmable logic controller (PLC) providing an OPC UA server.
+- A **proton exchange membrane electrolyzer (PEMEL)** with a programmable logic controller (PLC) providing Modbus client.
+- A **methanation unit (METH)** with a PLC providing an OPC UA server.
 - A **PostgreSQL database** for data storage
 
 ![Power-to-Gas](Power-to-Gas.png)
