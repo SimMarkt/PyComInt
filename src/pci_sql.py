@@ -23,7 +23,7 @@ class SQLConnection:
 
     def connect(self):
         """
-            Establishes the connection to the OPCUA server.
+            Establishes a connection to the SQL database.
         """
         try:
             # Connect to PostgreSQL using pg8000

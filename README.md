@@ -1,6 +1,6 @@
 # PyComInt
 
-Python communication interface for chemical plants connecting different process units for control, monitoring, and data storage.
+Python communication interface for technical processes and chemical plants with different process units for control, monitoring, and data storage.
 
 ---
 
@@ -18,7 +18,7 @@ Python communication interface for chemical plants connecting different process 
 
 ## Overview
 
-**PyComInt** is a communication interface designed for chemical plants. It facilitates multi-threaded data transfer between an **OPC UA server**, a **Modbus client**, and an **SQL database**. Due to implementation of try-exception ..., the code moreover ensures stable operation of the different functions, even if one connection fails. It has been designed for a Windows system, but can be also be deployed on a LINUX system (e.g. by using a Docker container).
+**PyComInt** is a communication interface designed for technical production processes. It facilitates multi-threaded data transfer between an **OPC UA server**, a **Modbus client**, and an **SQL database**. Due to implementation of try-except error handling, the code moreover ensures stable operation of the different functions, even if one connection fails. It has been designed for a Windows system, but can also be deployed on a LINUX system (e.g. by using a Docker container).
 
 ### Application
 
@@ -31,9 +31,9 @@ PyComInt has been applied to a **Power-to-Gas** process, integrating:
 
 The communication interface enables the reliable connection of the process units, PEMEL control, and data storage. With respect to this setup, the code operation comprises three different tasks:
 
-1. **PEMEL control**: Since the PLC of METH computes and determines the required hydrogen flow rate for methane synthesis, the code connects the PEMEL via Modbus with the METH via OPC UA. The set point for the hydrogen flow rate is converted to the respective electrical current of the PEMEL using a experimental data on the correlation of both values. The PEMEL control task is performed with high frequency (here, every second)
-2. **Data storage**: To storage the data of PEMEL and METH, the code connects PEMEL via Modbus and METH via OPC UA with PostgreSQL and inserts the process data into the database. Because of the relatively slow process dynamics of METH, the data storage task is performed less frequently (here, every 10 seconds)
-3. **Supervision**: If the connection of one of the hardware components has failed, the code maintains the other services and tries to reconnect to the corrresponding server or client (e.g. if the Modbus connection fails, it still performs data storage of METH). 
+1. **PEMEL control**: Since the PLC of METH computes and determines the required hydrogen flow rate for methane synthesis, the code connects PEMEL to METH via Modbus and OPC UA. The set point for the hydrogen flow rate is converted to the respective electrical current of the PEMEL using a experimental data correlating these values. The PEMEL control task is performed with high frequency (here, every second)
+2. **Data storage**: To store the data of PEMEL and METH, the code connects PEMEL via Modbus and METH via OPC UA with PostgreSQL and inserts the process data into the database. Because of the relatively slow process dynamics of METH, the data storage task is performed less frequently (here, every 10 seconds)
+3. **Supervision**: If the connection of one of the hardware components has failed, the code maintains the other services and tries to reconnect to the corresponding server or client (e.g. if the Modbus connection fails, it still performs data storage of METH). 
 
 This tool supports efficient data management and process control in industrial applications by ensuring reliable communication between different system components. The present application example contains only two process units and a database, but it can be extended to far more components following the structure below.
 
@@ -78,7 +78,7 @@ Contains source code for the different threads and connection wrappers using obj
 - **`src/pci_modbus.py`**: Implements the Modbus connection with a class object providing:
   - `connect()`: Connects to the Modbus client
   - `is_connected()`: Tests the Modbus connection
-  - `read_pemel_status()`: Reads and interpretes the Modbus register containing the current state of PEMEL using `convert_bits()`
+  - `read_pemel_status()`: Reads and interprets the Modbus register containing the current state of PEMEL using `convert_bits()`
   - `read_pemel_process_values()`: Reads the PEMEL process values using `convert_process_values()`
   - `convert_bits()`: Converts the binary signal of the bit-wise PEMEL state representation into a one-hot encoded array
   - `convert_process_values()`: Converts the process values in the different registers to an array
@@ -86,16 +86,16 @@ Contains source code for the different threads and connection wrappers using obj
   - `convert_h2_flow_to_current()`: Converts the hydrogen flow rate to the PEMEL's electrical current using `interpolate_h2_flow()`
   - `interpolate_h2_flow()`: Determines the electrical current based on the experimental values in `PEMEL_Current_H2Flowrate.txt`
 - **`src/pci_opcua.py`**: Implements the OPC UA connection with a class object providing:
-  - `connect()`: Connects to the OPC UA client
+  - `connect()`: Connects to the OPC UA server
   - `is_connected()`: Tests the OPC UA connection
   - `read_node_values()`: Reads the values of multiple nodes using their NodeIDs
 - **`src/pci_sql.py`**: Implements the SQL connection with a class object providing:
-  - `connect()`: Connects to the OPC UA client
-  - `is_connected()`: Tests the OPC UA connection
+  - `connect()`: Connects to the SQL database
+  - `is_connected()`: Tests the SQL connection
   - `insert_data()`: Inserts data into PostgreSQL database
 - **`src/threads.py`**: Implements multi-threaded operations, including:
-  - **PEMEL control thread** > `pemel_control()`: Manages PEMEL operations using Modbus and OPC UA with `el_control_func()` containing the main functionality
-  - **Data storage thread** > `data_storage()`: Handles data transfer between the OPC UA server, Modbus client, and SQL database with `data_trans_func()` containing the main functionality 
+  - **PEMEL control thread** > `pemel_control()`: Manages PEMEL operations using Modbus and OPC UA using `el_control_func()`
+  - **Data storage thread** > `data_storage()`: Handles data transfer between the OPC UA server, Modbus client, and SQL database using `data_trans_func()`
   - **Supervisor thread** > `supervisor()`: Monitors and attempts reconnection for disconnected services.
 
 ### Main Scripts
@@ -121,7 +121,7 @@ git clone https://github.com/SimMarkt/PyComInt.git
 # Navigate to the project directory
 cd PyComInt
 
-# Install a python virtual environment
+# Create a Python virtual environment
 python -m venv venv
 
 # Activate the virtual environment
@@ -137,7 +137,7 @@ After installing the python environment with its necessary packages, the configu
 1. Configure the project using the YAML files located in the `config/` directory. (Ensure that the different servers and clients are accessible)
 2. Run `pci_main.py` for a standard multi-threaded data transfer operation. (On Windows, it can further be tested for continuous deployment using the Windows Task Scheduler)
 3. Optionally, set up `pci_main_ws.py` as a Windows service for seamless background execution.
-4. The code furthermore creates a log file `PyComInt.log` for debugging and monitoring. 
+4. The code also creates a log file `PyComInt.log` for debugging and monitoring. 
 
 ---
 
@@ -152,7 +152,7 @@ After installing the python environment with its necessary packages, the configu
   - `cryptography`
   - `pg8000`
 
-In order to avoid any version conflicts, it is recommended to use the libraries given in `requirements.txt`. 
+To avoid any version conflicts, it is recommended to use the libraries given in `requirements.txt`. 
 
 ---
 
@@ -168,7 +168,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Citing
 
-If you use PyComInt in your research or application, please use the following BibTeX entry:
+If PyComInt is used in your research or application, please use the following BibTeX entry:
 ```BibTeX
 @misc{SimMarkPyComInt,
   author = {Markthaler, Simon},

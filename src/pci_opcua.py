@@ -22,7 +22,7 @@ class OPCUAConnection:
 
     def connect(self):
         """
-            Establish the connection to the OPCUA server.
+            Establishes the connection to the OPCUA server.
         """
         try:
             self.client = Client(self.opcua_config['URL'])
@@ -38,14 +38,14 @@ class OPCUAConnection:
 
     def is_connected(self):
         """
-            Check if the OPCUA connection is active.
+            Checks if the OPCUA connection is active.
             :return: True if connected, False otherwise.
         """
         return self.client is not None
         
     def read_node_values(self, type='AllNodes'):
         """
-            Read the values of multiple nodes using their NodeIDs.
+            Reads the values of multiple nodes using their NodeIDs.
             :param type: Reading type > either 'AllNodes' for reading all OPCUA nodes or 'H2' for reading only the hydrogen volume flow rate (for PEMEL control)
             :return values: Dictionary with node IDs as keys and their corresponding values (or errors) as values.
         """

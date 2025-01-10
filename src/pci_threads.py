@@ -11,7 +11,7 @@ import logging
 
 def pemel_control(control_interval, modbus_connection, opcua_connection):
     """
-        Contains the thread function forPEMEL control via OPCUA and Modbus
+        Contains the thread function for PEMEL control via OPCUA and Modbus
         :param control_interval: Interval for PEMEL control in [s]
     """
     while True:
@@ -73,7 +73,7 @@ def data_trans_func(modbus_connection, opcua_connection, sql_connection):
 
 def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_connection):
     """
-        Reconnects to the servers and clients if the connection fails 
+        Attempts to reconnect to servers and clients upon connection failure. 
         :param reconnection_interval: Interval for reconnection
         :param opcua_connection: Object with OPCUA connection information
         :param modbus_connection: Object with Modbus connection information

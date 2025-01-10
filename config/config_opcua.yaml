@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------------------------------------------------
 
 # OPCUA server URL and credentials
-URL : ...
-USERNAME : OPCUA_user_1
-PASSWORD : ...
+URL : ...                           # URL
+USERNAME : OPCUA_user_1             # Username
+PASSWORD : ...                      # Password
 
-# NodeID for the variables
+# Node IDs for the variables
 OPCUA_NODE_IDs : ["ns=7;s=::AsGlobalPV:real_Ph",
                   "ns=7;s=::AsGlobalPV:real_Ph"]
 H2_FLOW_ID : ns=7;s=::AsGlobalPV:real_h2_flowrate     # Node ID of the H2 flow rate set point (for PEMEL control)

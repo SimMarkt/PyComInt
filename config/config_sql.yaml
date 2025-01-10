@@ -8,10 +8,10 @@
 
 
 # PostgreSQL connection parameters
-DB_HOST : localhost   # IP Address: 127.0.0.1
-DB_PORT : 5432
-DB_NAME : Orbit
-DB_USER : python_opcua_user'       # 'postgres'
-DB_PASSWORD : ...
-DB_TABLE : orbit_data
-DB_COLUMS : ['timestamp', 'real_ph']
+DB_HOST : localhost                   # IP Address: 127.0.0.1
+DB_PORT : 5432                        # Database port
+DB_NAME : Orbit                       # Database name
+DB_USER : python_opcua_user'          # Username
+DB_PASSWORD : ...                     # Password
+DB_TABLE : orbit_data                 # Table with data
+DB_COLUMNS : ['timestamp', 'real_ph'] # Column descriptions
