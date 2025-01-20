@@ -31,7 +31,7 @@ class OPCUAConnection:
             self.client.set_password(self.opcua_config['PASSWORD'])
 
             self.client.connect()
-            logging.info(f"Connected to {self.opcua_config['URL']} as {self.opcua_config['USERNAME']}")
+            logging.info(f"Connected to OPC UA server at {self.opcua_config['URL']} as {self.opcua_config['USERNAME']}")
         except Exception as e:
             logging.error(f"OPC UA connection failed: {e}")
             self.client = None  # Mark as unavailable

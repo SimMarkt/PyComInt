@@ -87,7 +87,8 @@ class ModbusConnection:
                 if response.isError():
                     retries += 1
                     raise Exception(f"Error reading PEMEL process values - {self.modbus_config['PROCESS_VALUES']['ADDRESS']}: {response}")
-                pv_values = self.convert_process_values(response)
+                registers = list(response.registers)
+                pv_values = self.convert_process_values(registers)
                 return pv_values  # Return processed data if successful
             except Exception as e:
                 logging.error(f"Reading the PEMEL process values registers failed: {e}")
@@ -122,7 +123,7 @@ class ModbusConnection:
         
         return one_hot
     
-    def convert_process_values(self, register):
+    def convert_process_values(self, registers):
         """
             Returns the process values of the PEMEL.
             :param register: The Modbus register.
@@ -136,7 +137,7 @@ class ModbusConnection:
 
         # Print and store the results
         # logging.info(("Process Variable Values:")
-        for i, value in enumerate(register):
+        for i, value in enumerate(registers):
             variable_name = variable_names[i]
             # logging.info((f"{variable_name}: {value}")
             pv_values.append(value)
@@ -148,23 +149,25 @@ class ModbusConnection:
             Converts the hydrogen volume flow rate set point to the PEMEL's electrical current and writes the value to the respective register
             :param set_h2_flow: Hydrogen volume flow rate set point.
         """    
-        # Calculate PEMEL current set point according to the desired H2 flow rate
-        set_current = self.convert_h2_flow_to_current(set_h2_flow)
+        # Calculate PEEL current set point according to the desired H2 flow rate
+        set_current_test = self.convert_h2_flow_to_current(set_h2_flow)            ########################################################
+        
+        set_current = 0                                                         ########################################################
 
         max_retries = self.modbus_config['MAX_RETRIES']
         retries = 0
-        while retries < max_retries:
-            try:
-                # Write the Modbus register for PEMEL current
-                write_result = self.client.write_register(self.modbus_config['WRITE_REGISTER'], set_current)
+        # while retries < max_retries:                                          ########################################################
+        #     try:
+        #         # Write the Modbus register for PEMEL current
+        #         write_result = self.client.write_register(self.modbus_config['WRITE_REGISTER'], set_current)
 
-                if write_result.isError():
-                    retries += 1
-                    raise Exception(f"Error writing value {set_current} to register {self.modbus_config['WRITE_REGISTER']}")
-            except Exception as e:
-                logging.error(f"Writing the PEMEL current registers failed: {e}")
-                retries += 1
-                time.sleep(self.modbus_config['RETRY_INTERVAL'])
+        #         if write_result.isError():
+        #             retries += 1
+        #             raise Exception(f"Error writing value {set_current} to register {self.modbus_config['WRITE_REGISTER']}")
+        #     except Exception as e:
+        #         logging.error(f"Writing the PEMEL current registers failed: {e}")
+        #         retries += 1
+        #         time.sleep(self.modbus_config['RETRY_INTERVAL'])
 
     def convert_h2_flow_to_current(self, set_h2_flow):
         """
@@ -197,7 +200,7 @@ class ModbusConnection:
         """
         if set_h2_flow >= max(h2_flowrate_array):               # If the input exceeds the maximum array value
             return self.modbus_config['MAX_CURRENT']
-        if set_h2_flow < self.modbus_config['MIN_CURRENT']:     # If the input is below the minimum electrical current
+        if set_h2_flow < min(h2_flowrate_array):                # If the input is below the minimum array value
             return 0
         
         for i in range(len(h2_flowrate_array) - 1):
@@ -205,7 +208,8 @@ class ModbusConnection:
                 # Linear interpolation
                 slope = (current_array[i + 1] - current_array[i]) / (h2_flowrate_array[i + 1] - h2_flowrate_array[i])
                 current_value = current_array[i] + slope * (set_h2_flow - h2_flowrate_array[i])
-                return round(current_value)
-            else:
-                return None
+                if current_value < self.modbus_config['MIN_CURRENT']:     # If the input is below the minimum electrical current
+                    return 0 
+                else:
+                    return round(current_value)
         

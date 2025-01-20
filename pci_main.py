@@ -28,6 +28,11 @@ def setup_logging():
         datefmt="%Y-%m-%d %H:%M:%S"                             # Date format
     )
 
+    # Suppress INFO logs from third-party libraries
+    logging.getLogger("pymodbus").setLevel(logging.ERROR)
+    logging.getLogger("opcua").setLevel(logging.WARNING)
+    logging.getLogger("opcua").setLevel(logging.WARNING)
+
 def main(): 
     # Load general configuration
     try:
@@ -43,16 +48,18 @@ def main():
         modbus_connection = ModbusConnection()
         opcua_connection = OPCUAConnection()
         sql_connection = SQLConnection()
-        logging.info("Initialized all connections successfully.")
+        modbus_connection.connect()
+        opcua_connection.connect()
+        sql_connection.connect()
     except Exception as e:
         logging.error(f"Error initializing connections: {e}")
         return
- 
-    try:
-        thread_con = threading.Thread(target=pemel_control(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)      # Thread for PEMEL control
-        thread_dat = threading.Thread(target=data_storage(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for data storage
-        thread_sup = threading.Thread(target=supervisor(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for connection supervision
-        
+
+    try:       
+        thread_con = threading.Thread(target=pemel_control, args=(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)  # Thread for PEMEL control
+        thread_dat = threading.Thread(target=data_storage,args=(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for data storage
+        thread_sup = threading.Thread(target=supervisor,args=(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for connection supervision
+
         thread_con.start()
         logging.info("PEMEL control thread started.")
         thread_dat.start()
@@ -75,7 +82,7 @@ if __name__ == "__main__":
     # Set up logging
     setup_logging()
 
-    logging.info("---------------------------------------------------------------------------------------------------------")
+    logging.info("\n\n---------------------------------------------------------------------------------------------------------")
     logging.info(f"Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
 
     # Run the main function

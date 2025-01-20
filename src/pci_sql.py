@@ -26,13 +26,12 @@ class SQLConnection:
             Establishes a connection to the SQL database.
         """
         try:
-            # Connect to PostgreSQL using pg8000
             self.connection = pg8000.connect(user=self.sql_config['DB_USER'], 
                                              password=self.sql_config['DB_PASSWORD'],
                                              database=self.sql_config['DB_NAME'], 
                                              host=self.sql_config['DB_HOST'], 
                                              port=self.sql_config['DB_PORT'])
-            logging.info(f"Connected to {self.sql_config['DB_NAME']} as {self.sql_config['DB_USER'],}")   
+            logging.info(f"Connected to SQL database <{self.sql_config['DB_NAME']}> as {self.sql_config['DB_USER']}")   
             return
         except Exception as e:
             logging.error(f"SQL connection failed: {e}")                                                   
@@ -55,9 +54,20 @@ class SQLConnection:
             current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Get the current date and time
             cursor = self.connection.cursor()
             
+            values = [13, 0, 12, 13, 14, 3, 4, 5, 6, 7, 8, 9, 10, 1, 1, 1, 1,1,1,1,1,1,0,1,0,0,0,1,0,0,0,1,1,1,0,0,11] ###########################
+
             # Placeholders based on the number of values
             placeholders = ', '.join(['%s'] * (len(values) + 1))  # +1 for the timestamp
-            query = f"INSERT INTO {self.sql_config['DB_TABLE']} {self.sql_config['DB_COLUMNS']} VALUES ({placeholders})"
+            columns = ', '.join(self.sql_config['DB_COLUMNS'])  # Join the column names with commas
+
+            # Check the number of columns and values
+            expected_columns_count = len(self.sql_config['DB_COLUMNS'])
+            actual_values_count = len(values) + 1  # +1 for the current_timestamp
+
+            assert expected_columns_count == actual_values_count, ValueError(f"Column count mismatch: Expected {expected_columns_count}, got {actual_values_count}. "
+                                                                             "Ensure the number of columns matches the values.")
+
+            query = f"INSERT INTO {self.sql_config['DB_TABLE']} ({columns}) VALUES ({placeholders})"
 
             # Add the timestamp to the values
             values_with_timestamp = [current_timestamp] + values

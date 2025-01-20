@@ -1,0 +1,12 @@
+
+
+---------------------------------------------------------------------------------------------------------
+2025-01-20 11:23:10 - INFO - Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation
+2025-01-20 11:23:10 - INFO - Loaded general configuration successfully.
+2025-01-20 11:23:10 - INFO - Connected to Modbus server at ...
+2025-01-20 11:23:10 - INFO - Connected to OPC UA server at ... as OPCUA_user_1
+2025-01-20 11:23:10 - INFO - Connected to SQL database ... as python_opcua_user
+2025-01-20 11:23:10 - INFO - PEMEL control thread started.
+2025-01-20 11:23:10 - INFO - Data storage thread started.
+2025-01-20 11:23:10 - INFO - Supervisor thread started.
+2025-01-20 11:23:48 - INFO - Exiting on user request (KeyboardInterrupt).
