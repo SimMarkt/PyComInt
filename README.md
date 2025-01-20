@@ -10,9 +10,7 @@ Python communication interface for technical processes and chemical plants with 
 2. [Project Structure](#features)
 3. [Installation and Usage](#installation)
 4. [Requirements](#requirements)
-5. [Contributing](#contributing)
-6. [License](#license)
-7. [Citing](#citing)
+5. [License](#license)
 
 ---
 
@@ -156,24 +154,6 @@ To avoid any version conflicts, it is recommended to use the libraries given in 
 
 ---
 
-## Contributing
-
-Contributions are welcome! Feel free to submit issues on [GitHub](https://github.com/SimMarkt/PyComInt).
-
----
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Citing
-
-If PyComInt is used in your research or application, please use the following BibTeX entry:
-```BibTeX
-@misc{SimMarkPyComInt,
-  author = {Markthaler, Simon},
-  title = {PyComInt: Python communication interface for chemical plants},
-  year = {2025},
-  url = {https://github.com/SimMarkt/PyComInt}
-}
-```
