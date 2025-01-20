@@ -12,6 +12,6 @@ USERNAME : OPCUA_user_1             # Username
 PASSWORD : ...                      # Password
 
 # Node IDs for the variables
-OPCUA_NODE_IDs : ["ns=7;s=::AsGlobalPV:real_Ph",
-                  "ns=7;s=::AsGlobalPV:real_Ph"]
+OPCUA_NODE_IDs : ["ns=7;s=::AsGlobalPV:var_1",
+                  "ns=7;s=::AsGlobalPV:var_2"]
 H2_FLOW_ID : ns=7;s=::AsGlobalPV:real_h2_flowrate     # Node ID of the H2 flow rate set point (for PEMEL control)

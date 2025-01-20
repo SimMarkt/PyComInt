@@ -63,10 +63,10 @@ class PyComIntService(win32serviceutil.ServiceFramework):
             sql_connection = SQLConnection()
 
             logging.info("Service is starting.")
-            thread_con = threading.Thread(target=pemel_control(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)      # Thread for PEMEL control
-            thread_dat = threading.Thread(target=data_storage(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for data storage
-            thread_sup = threading.Thread(target=supervisor(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection), daemon=True)        # Thread for connection supervision
-         
+            thread_con = threading.Thread(target=pemel_control, args=(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)  # Thread for PEMEL control
+            thread_dat = threading.Thread(target=data_storage,args=(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for data storage
+            thread_sup = threading.Thread(target=supervisor,args=(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for connection supervision
+
             thread_con.start()
             thread_dat.start()
             thread_sup.start()
