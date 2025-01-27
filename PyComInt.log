@@ -1,12 +1,21 @@
 
-
 ---------------------------------------------------------------------------------------------------------
-2025-01-20 11:23:10 - INFO - Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation
-2025-01-20 11:23:10 - INFO - Loaded general configuration successfully.
-2025-01-20 11:23:10 - INFO - Connected to Modbus server at ...
-2025-01-20 11:23:10 - INFO - Connected to OPC UA server at ... as OPCUA_user_1
-2025-01-20 11:23:10 - INFO - Connected to SQL database ... as python_opcua_user
-2025-01-20 11:23:10 - INFO - PEMEL control thread started.
-2025-01-20 11:23:10 - INFO - Data storage thread started.
-2025-01-20 11:23:10 - INFO - Supervisor thread started.
-2025-01-20 11:23:48 - INFO - Exiting on user request (KeyboardInterrupt).
+2025-01-27 09:43:37 - INFO - Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation
+2025-01-27 09:43:37 - INFO - Loaded general configuration successfully.
+2025-01-27 09:43:37 - INFO - Connected to Modbus server at 192.168.0.1:502
+2025-01-27 09:43:38 - INFO - Connected to OPC UA server at opc.tcp://172.20.33.133:4840 as OPCUA_user_1
+2025-01-27 09:43:38 - INFO - Connected to SQL database <Orbit> as python_opcua_user
+2025-01-27 09:43:38 - INFO - PEMEL control thread started.
+2025-01-27 09:43:38 - INFO - Data storage thread started.
+2025-01-27 09:43:38 - INFO - Supervisor thread started.
+2025-01-27 09:43:38 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
+2025-01-27 09:43:38 - INFO - Data transfer successful.
+2025-01-27 09:43:48 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
+2025-01-27 09:43:49 - INFO - Data transfer successful.
+2025-01-27 09:43:58 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
+2025-01-27 09:43:59 - INFO - Data transfer successful.
+2025-01-27 09:44:08 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
+2025-01-27 09:44:10 - INFO - Data transfer successful.
+2025-01-27 09:44:18 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
+2025-01-27 09:44:20 - INFO - Data transfer successful.
+2025-01-27 09:44:28 - INFO - Exiting on user request (KeyboardInterrupt).

@@ -1,7 +1,5 @@
 # ----------------------------------------------------------------------------------------------------------------
 # PyComInt: Communication interface for chemical plants
-# https://github.com/SimMarkt/PyComInt
-
 # pci_threads.py: 
 # > Implements the different threads for PEMEL control, data storage, and thread supervision 
 # ----------------------------------------------------------------------------------------------------------------
@@ -14,29 +12,46 @@ def pemel_control(control_interval, modbus_connection, opcua_connection):
         Contains the thread function for PEMEL control via OPCUA and Modbus
         :param control_interval: Interval for PEMEL control in [s]
     """
+
+    last_log_time = 0  # Initialize last log time for PEMEL control
+
     while True:
-        el_control_func(modbus_connection, opcua_connection)
+        # Call the PEMEL control function and pass the last log time
+        last_log_time = el_control_func(modbus_connection, opcua_connection, last_log_time)
         time.sleep(control_interval)
 
-def el_control_func(modbus_connection, opcua_connection):
+def el_control_func(modbus_connection, opcua_connection, last_log_time):
     """
         Controls PEMEL via OPCUA and Modbus
         :param opcua_connection: Object with OPCUA connection information
         :param modbus_connection: Object with Modbus connection information
+        :param last_log_time: Timestamp of the last log message
+        :return: Updated timestamp of the last log message
     """
     try:
         status_one_hot = modbus_connection.read_pemel_status()
         set_h2_flow = opcua_connection.read_node_values(type='H2')   # The type defines the number of nodes to read, either all nodes 'AllNodes' or only the hydrogen flow rate 'H2' (for PEMEL control)
         set_h2_flow = list(set_h2_flow.values()) # Extract the value from the dictionary
 
-        if status_one_hot[10] == 1:                 # PEMEL operation is only valid if Hydrogen cooling temperature reached (BIT_10)    ##################### == 1
+        current_time = time.time()  # Get the current time
+
+        if status_one_hot[10] == 1:                 # PEMEL operation is only valid if Hydrogen cooling temperature reached (BIT_10) 
             modbus_connection.write_pemel_current(set_h2_flow[0])
-            logging.info(f"PEMEL control successful: {set_h2_flow[0]} Nl/min")
+            # Log only if 10 seconds have passed
+            if current_time - last_log_time >= 10:
+                logging.info(f"PEMEL control successful: {set_h2_flow[0]} Nl/min")
+                last_log_time = current_time  # Update the last log time
         else:
-            logging.warning(f"PEMEL control invalid: hydrogen cooling temperature is too high")
+            # Log only if 10 seconds have passed
+            if current_time - last_log_time >= 10:
+                logging.warning("PEMEL control invalid: hydrogen cooling temperature is too high")
+                last_log_time = current_time  # Update the last log time
 
     except Exception as e:
         logging.error(f"Error in PEMEL control function: {e}")
+    
+    # Return the updated last log time
+    return last_log_time
 
 def data_storage(storage_interval, modbus_connection, opcua_connection, sql_connection):
     """
@@ -61,8 +76,7 @@ def data_trans_func(modbus_connection, opcua_connection, sql_connection):
         opcua_values = list(opcua_values.values()) # Extract the values from the dictionary
 
         # Write values into SQL database
-        # values = status_one_hot + pemel_values + opcua_values     ####################################################################
-        values = opcua_values                                       ####################################################################
+        values = opcua_values + status_one_hot + pemel_values
         if values is not None:
             sql_connection.insert_data(values)
 

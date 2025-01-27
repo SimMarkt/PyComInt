@@ -14,4 +14,10 @@ DB_NAME : ...                       # Database name
 DB_USER : python_opcua_user'          # Username
 DB_PASSWORD : ...                     # Password
 DB_TABLE : ...                 # Table with data
-DB_COLUMNS : ['timestamp', 'real_var1', 'real_var2'] # Column descriptions
+DB_COLUMNS : ['timestamp', 'real_temperature', 'real_pressure', 'real_methane_production',
+              'error', 'modeoff', 'modemanual', 'modeautomatic', 'safety', 'main_fan', 
+              'fan', 'outer_cooling_fan', 'outer_cooling_pump', 'h2_cooling', 
+              'h2_cooling_temperature_reached', 'valve', 'pump1', 'pump2', 'pump3', 'empty',
+              'el_power_act', 'el_current_act', 'el_h2_pressure_act', 'el_conductance_act', 
+              'el_temp_In_act', 'el_propventil', 'el_calch2flow_act', 'el_calch2volume_sum', 'el_1_temp_out_act', 
+              'el_2_temp_out_act', 'el_3_temp_out_act', 'el_4_temp_out_act', 'el_5_temp_out_act', 'el_h2_cooling_temp_act']

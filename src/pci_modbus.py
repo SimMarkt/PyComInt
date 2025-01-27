@@ -1,7 +1,5 @@
 # ----------------------------------------------------------------------------------------------------------------
 # PyComInt: Communication interface for chemical plants
-# https://github.com/SimMarkt/PyComInt
-
 # pci_modbus.py: 
 # > Implements the Modbus connection
 # ----------------------------------------------------------------------------------------------------------------
@@ -150,8 +148,7 @@ class ModbusConnection:
             :param set_h2_flow: Hydrogen volume flow rate set point.
         """    
         # Calculate PEEL current set point according to the desired H2 flow rate
-        set_current_test = self.convert_h2_flow_to_current(set_h2_flow)            ########################################################
-        
+        # set_current = self.convert_h2_flow_to_current(set_h2_flow)            ########################################################
         set_current = 0                                                         ########################################################
 
         max_retries = self.modbus_config['MAX_RETRIES']

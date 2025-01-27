@@ -15,37 +15,37 @@ PEMEL_STATUS :              # Contains information about the PEMEL status (Bit-w
   ADDRESS : 0x8061          # Address to read
   BIT_0 : Error
   BIT_1 : ModeOff
-  BIT_2 : ModeMan
-  BIT_3 : ModeAuto
-  BIT_4 : ESM Safety OK
-  BIT_5 : ' '
-  BIT_6 : Main fan ON
+  BIT_2 : ModeManual
+  BIT_3 : ModeAutomatic
+  BIT_4 : Safety OK
+  BIT_5 : Main fan ON
+  BIT_6 : Ancillary fan ON
   BIT_7 : Outer cooling fan ON
   BIT_8 : Outer cooling pump ON
   BIT_9 : Hydrogen cooling ON
   BIT_10 : Hydrogen cooling temperature reached
-  BIT_11 : FWKS PropValve ON
-  BIT_12 : Pump FWKS ON
-  BIT_13 : Pump PWT ON
-  BIT_14 : Pump water processing
-  BIT_15 : ' '
+  BIT_11 : Valve ON
+  BIT_12 : Pump1 ON
+  BIT_13 : Pump2 ON
+  BIT_14 : Pump3 ON
+  BIT_15 : Empty
 PROCESS_VALUES :
   ADDRESS : 0x8065         # Start address to read continuous process values
   COUNT : 14                  # Number of registers to read continuous process values (Registers ranging from 0x8062 to 0x806F)
   REG_0 : EL_Power_Act               # Power actual value [W]
-  REG_1 : EL_Current_Act             # Current actual value [1/10 A]
-  REG_2 : EL_H2_Pressure_Act         # Hydrogen pressure actual value [mBar]
+  REG_1 : EL_Current_Act             # Current actual value [A]
+  REG_2 : EL_H2_Pressure_Act         # Hydrogen pressure actual value [Bar]
   REG_3 : EL_Conductance_Act         # Conductance actual value [1/1000 μS]
-  REG_4 : EL_Temp_In_Act             # Inlet temperature actual value [1/10 °C, 20° shift]
-  REG_5 : EL_EBM_FWKS_PropVentil     # Set point proportional valve FWKS cooler [1/10 %]
-  REG_6 : EL_CalcH2Flow_Act          # Hydrogen flow actual value [1/10 NL/min]
+  REG_4 : EL_Temp_In_Act             # Inlet temperature actual value [°C]
+  REG_5 : EL_PropVentil     # Set point proportional valve cooler [%]
+  REG_6 : EL_CalcH2Flow_Act          # Hydrogen flow actual value [NL/min]
   REG_7 : EL_CalcH2Volume_Sum        # Hydrogen actual produced volume value [NL]
-  REG_8 : EL_ELM1_Temp_Out_Act       # ELM1 outlet temperature actual value [1/10 °C, 20° shift]
-  REG_9 : EL_ELM2_Temp_Out_Act       # ELM2 outlet temperature actual value [1/10 °C, 20° shift]
-  REG_10 : EL_ELM3_Temp_Out_Act       # ELM3 outlet temperature actual value [1/10 °C, 20° shift]
-  REG_11 : EL_ELM4_Temp_Out_Act       # ELM4 outlet temperature actual value [1/10 °C, 20° shift]
-  REG_12 : EL_ELM5_Temp_Out_Act       # ELM5 outlet temperature actual value [1/10 °C, 20° shift]
-  REG_13 : EL_H2_Kuehler_Temp_Act     # H2 cooler temperature actual value [1/10 °C, 20° shift]
+  REG_8 : EL_1_Temp_Out_Act       # Outlet temperature actual value 1 [°C]
+  REG_9 : EL_2_Temp_Out_Act       # Outlet temperature actual value 2 [°C]
+  REG_10 : EL_3_Temp_Out_Act       # Outlet temperature actual value 3 [°C]
+  REG_11 : EL_4_Temp_Out_Act       # Outlet temperature actual value 4 [°C]
+  REG_12 : EL_5_Temp_Out_Act       # Outlet temperature actual value 5 [°C]
+  REG_13 : EL_H2_cooling_Temp_Act     # H2 cooler temperature actual value [°C]
 WRITE_REGISTER : 0x8006     # End address of PEMEL power set point EL_Current_SetPoint in [A]
 MAX_RETRIES : 5             # Max retries on error
 RETRY_INTERVAL : 2          # Time in seconds to wait before retrying a connection.

@@ -1,7 +1,5 @@
 # ----------------------------------------------------------------------------------------------------------------
 # PyComInt: Communication interface for chemical plants
-# https://github.com/SimMarkt/PyComInt
-
 # pci_opcua.py: 
 # > Implements the OPC UA connection
 # ----------------------------------------------------------------------------------------------------------------
