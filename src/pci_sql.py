@@ -1,7 +1,5 @@
 # ----------------------------------------------------------------------------------------------------------------
 # PyComInt: Communication interface for chemical plants
-# https://github.com/SimMarkt/PyComInt
-
 # pci_sql.py: 
 # > Implements the SQL connection
 # ----------------------------------------------------------------------------------------------------------------
@@ -53,8 +51,6 @@ class SQLConnection:
             # Get the current timestamp
             current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Get the current date and time
             cursor = self.connection.cursor()
-            
-            values = [13, 0, 12, 13, 14, 3, 4, 5, 6, 7, 8, 9, 10, 1, 1, 1, 1,1,1,1,1,1,0,1,0,0,0,1,0,0,0,1,1,1,0,0,11] ###########################
 
             # Placeholders based on the number of values
             placeholders = ', '.join(['%s'] * (len(values) + 1))  # +1 for the timestamp
