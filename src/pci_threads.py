@@ -39,7 +39,7 @@ def el_control_func(modbus_connection, opcua_connection, last_log_time):
             modbus_connection.write_pemel_current(set_h2_flow[0])
             # Log only if 10 seconds have passed
             if current_time - last_log_time >= 10:
-                logging.info(f"PEMEL control successful: {set_h2_flow[0]} Nl/min")
+                # logging.info(f"PEMEL control successful: {set_h2_flow[0]} Nl/min")
                 last_log_time = current_time  # Update the last log time
         else:
             # Log only if 10 seconds have passed
@@ -80,7 +80,7 @@ def data_trans_func(modbus_connection, opcua_connection, sql_connection):
         if values is not None:
             sql_connection.insert_data(values)
 
-        logging.info("Data transfer successful.")
+        # logging.info("Data transfer successful.")
     except Exception as e:
         logging.error(f"Error in data transfer function: {e}")
 
