@@ -9,13 +9,4 @@
 2025-01-27 09:43:38 - INFO - Data storage thread started.
 2025-01-27 09:43:38 - INFO - Supervisor thread started.
 2025-01-27 09:43:38 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
-2025-01-27 09:43:38 - INFO - Data transfer successful.
-2025-01-27 09:43:48 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
-2025-01-27 09:43:49 - INFO - Data transfer successful.
-2025-01-27 09:43:58 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
-2025-01-27 09:43:59 - INFO - Data transfer successful.
-2025-01-27 09:44:08 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
-2025-01-27 09:44:10 - INFO - Data transfer successful.
-2025-01-27 09:44:18 - WARNING - PEMEL control invalid: hydrogen cooling temperature is too high
-2025-01-27 09:44:20 - INFO - Data transfer successful.
-2025-01-27 09:44:28 - INFO - Exiting on user request (KeyboardInterrupt).
+2025-01-27 09:43:42 - INFO - Exiting on user request (KeyboardInterrupt).
