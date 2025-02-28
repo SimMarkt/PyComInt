@@ -7,8 +7,8 @@ Python communication interface for technical processes and chemical plants with 
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Project Structure](#features)
-3. [Installation and Usage](#installation)
+2. [Project Structure](#project-structure)
+3. [Installation and Usage](#installation-and-usage)
 4. [Requirements](#requirements)
 5. [License](#license)
 
