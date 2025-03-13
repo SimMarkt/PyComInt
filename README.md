@@ -110,7 +110,9 @@ Contains source code for the different threads and connection wrappers using obj
 
 ## Installation and Usage
 
-The following steps describe the installation procedure on a Windows system:
+### Using a virtual environment
+
+To run **PyComInt** in a Python virtual environment, follow these steps to install and run the project:
 
 ```bash
 # Clone the repository
@@ -135,7 +137,59 @@ After installing the python environment with its necessary packages, the configu
 1. Configure the project using the YAML files located in the `config/` directory. (Ensure that the different servers and clients are accessible)
 2. Run `pci_main.py` for a standard multi-threaded data transfer operation. (On Windows, it can further be tested for continuous deployment using the Windows Task Scheduler)
 3. Optionally, set up `pci_main_ws.py` as a Windows service for seamless background execution.
-4. The code also creates a log file `PyComInt.log` for debugging and monitoring. 
+
+### Using a Docker container
+
+To run **PyComInt** as a Docker container, follow these steps to install and run the project:
+
+```bash
+# Clone the repository
+git clone https://github.com/SimMarkt/PyComInt.git
+
+# Navigate to the project directory
+cd PyComInt
+
+# Build the Docker container using the 'Dockerfile'
+docker build -t pycomint:v1 .
+
+# Verify that the image was created successfully
+docker images
+
+>>
+REPOSITORY    TAG       IMAGE ID       CREATED         
+pycomint      v1        ...            1 minutes ago
+>>
+
+# Run the container
+docker run --rm -it pycomint:v1
+
+```
+
+After testing the Docker container, the configuration needs to be adjusted to the specific plant setup. The following points outline the usage of the communication interface: 
+
+1. Configure the project using the YAML files located in the `config/` directory. (Ensure that the different servers and clients are accessible)
+2. Rebuilt the Docker image to apply them in the container.
+
+```bash
+# Rebuild the Docker image using the 'Dockerfile'
+docker build -t pycomint:v1 .
+
+# Verify that the image was created successfully
+docker images
+
+>>
+REPOSITORY    TAG       IMAGE ID       CREATED         
+pycomint      v1        ...            1 minutes ago   
+>>
+
+# Run the container
+docker run --rm -it pycomint:v1
+
+```
+
+### Monitoring
+
+The code creates a log file `PyComInt.log` for debugging and monitoring. 
 
 ---
 
