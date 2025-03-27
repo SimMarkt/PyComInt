@@ -156,8 +156,8 @@ docker build -t pycomint:v1 .
 docker images
 
 >>
-REPOSITORY    TAG       IMAGE ID       CREATED         
-pycomint      v1        ...            1 minutes ago
+REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
+pycomint      v1        ...            9 seconds ago   1.06GB
 >>
 
 # Run the container
@@ -178,8 +178,8 @@ docker build -t pycomint:v1 .
 docker images
 
 >>
-REPOSITORY    TAG       IMAGE ID       CREATED         
-pycomint      v1        ...            1 minutes ago   
+REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
+pycomint      v1        ...            3 minutes ago   1.06GB
 >>
 
 # Run the container
