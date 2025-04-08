@@ -8,8 +8,8 @@
 
 
 # PostgreSQL connection parameters
-DB_HOST : localhost                   # IP Address: 127.0.0.1
-DB_PORT : 5432                        # Database port
+DB_HOST : ...                       # If the SQL database is present on the same server (Virtual Environment: "127.0.0.1"/"localhost"; Docker Container: "host.docker.internal")
+DB_PORT : 5432                      # Database port
 DB_NAME : ...                       # Database name
 DB_USER : python_opcua_user'          # Username
 DB_PASSWORD : ...                     # Password

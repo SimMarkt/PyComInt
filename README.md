@@ -168,7 +168,8 @@ docker run --rm -it pycomint:v1
 After testing the Docker container, the configuration needs to be adjusted to the specific plant setup. The following points outline the usage of the communication interface: 
 
 1. Configure the project using the YAML files located in the `config/` directory. (Ensure that the different servers and clients are accessible)
-2. Rebuilt the Docker image to apply them in the container.
+2. Ensure that the Docker container has network access to all IPs - check Firewall and routing. (Since the Container only runs as a client, no further port adjustment is necessary)
+3. Rebuilt the Docker image to apply them in the container.
 
 ```bash
 # Rebuild the Docker image using the 'Dockerfile'
