@@ -16,12 +16,12 @@ Python communication interface for technical processes and chemical plants with 
 
 ## Overview
 
-**PyComInt** is a communication interface designed for technical production processes. It facilitates multi-threaded data transfer between an **OPC UA server**, a **Modbus client**, and an **SQL database**. Due to implementation of try-except error handling, the code moreover ensures stable operation of the different functions, even if one connection fails. It has been designed for a Windows system, but can also be deployed on a LINUX system (e.g. by using a Docker container).
+**PyComInt** is a communication interface designed for technical production processes. It facilitates multi-threaded data transfer between an **OPC UA server**, a **Modbus server**, and an **SQL database**. Due to implementation of try-except error handling, the code moreover ensures stable operation of the different functions, even if one connection fails. It has been designed for a Windows system, but can also be deployed on a LINUX system (e.g. by using a Docker container).
 
 ### Application
 
 PyComInt has been applied to a **Power-to-Gas** process, integrating:
-- A **proton exchange membrane electrolyzer (PEMEL)** with a programmable logic controller (PLC) providing Modbus client.
+- A **proton exchange membrane electrolyzer (PEMEL)** with a programmable logic controller (PLC) providing Modbus server.
 - A **methanation unit (METH)** with a PLC providing an OPC UA server.
 - A **PostgreSQL database** for data storage
 
@@ -67,14 +67,14 @@ PyComInt/
 ### `config/`
 Contains configuration files for various components of the project:
 - **`config/config_gen.yaml`**: General configuration for main connection tasks and logging.
-- **`config/config_modbus.yaml`**: Configuration for the Modbus client, including details for decrypting bit-wise signals.
+- **`config/config_modbus.yaml`**: Configuration for the Modbus server, including details for decrypting bit-wise signals.
 - **`config/config_opcua.yaml`**: Configuration for the OPC UA server and tagged nodes.
 - **`config/config_sql.yaml`**: Configuration for the SQL database (PostgreSQL).
 
 ### `src/`
 Contains source code for the different threads and connection wrappers using object-oriented programming:
 - **`src/pci_modbus.py`**: Implements the Modbus connection with a class object providing:
-  - `connect()`: Connects to the Modbus client
+  - `connect()`: Connects to the Modbus server
   - `is_connected()`: Tests the Modbus connection
   - `read_pemel_status()`: Reads and interprets the Modbus register containing the current state of PEMEL using `convert_bits()`
   - `read_pemel_process_values()`: Reads the PEMEL process values using `convert_process_values()`
@@ -93,7 +93,7 @@ Contains source code for the different threads and connection wrappers using obj
   - `insert_data()`: Inserts data into PostgreSQL database
 - **`src/threads.py`**: Implements multi-threaded operations, including:
   - **PEMEL control thread** > `pemel_control()`: Manages PEMEL operations using Modbus and OPC UA using `el_control_func()`
-  - **Data storage thread** > `data_storage()`: Handles data transfer between the OPC UA server, Modbus client, and SQL database using `data_trans_func()`
+  - **Data storage thread** > `data_storage()`: Handles data transfer between the OPC UA server, Modbus server, and SQL database using `data_trans_func()`
   - **Supervisor thread** > `supervisor()`: Monitors and attempts reconnection for disconnected services.
 
 ### Main Scripts
