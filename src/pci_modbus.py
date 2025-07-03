@@ -58,9 +58,9 @@ class ModbusConnection:
                                                             count=1,  # PEMEL status is located in one register
                                                             slave=self.modbus_config['SLAVE_ID'])  # Updated argument for slave ID
                 if response.isError():
-                    retries += 1
                     raise Exception(f"Error reading PEMEL status - {self.modbus_config['PEMEL_STATUS']['ADDRESS']}: {response}")
                 status_one_hot = self.convert_bits(response.registers[0])
+                retries += 1
                 return status_one_hot  # Return processed data if successful
             except Exception as e:
                 logging.error(f"Reading the PEMEL status register failed: {e}")
@@ -82,11 +82,12 @@ class ModbusConnection:
                 response = self.client.read_holding_registers(self.modbus_config['PROCESS_VALUES']['ADDRESS'] - self.modbus_config['BASE_REGISTER_OFFSET'],
                                                               count=self.modbus_config['PROCESS_VALUES']['COUNT'],  # Read all important registers
                                                               slave=self.modbus_config['SLAVE_ID'])  # Updated argument for slave ID
+
                 if response.isError():
-                    retries += 1
                     raise Exception(f"Error reading PEMEL process values - {self.modbus_config['PROCESS_VALUES']['ADDRESS']}: {response}")
                 registers = list(response.registers)
                 pv_values = self.convert_process_values(registers)
+                retries += 1
                 return pv_values  # Return processed data if successful
             except Exception as e:
                 logging.error(f"Reading the PEMEL process values registers failed: {e}")
@@ -148,23 +149,21 @@ class ModbusConnection:
             :param set_h2_flow: Hydrogen volume flow rate set point.
         """    
         # Calculate PEEL current set point according to the desired H2 flow rate
-        # set_current = self.convert_h2_flow_to_current(set_h2_flow)            ########################################################
-        set_current = 0                                                         ########################################################
+        set_current = self.convert_h2_flow_to_current(set_h2_flow)            
 
         max_retries = self.modbus_config['MAX_RETRIES']
         retries = 0
-        # while retries < max_retries:                                          ########################################################
-        #     try:
-        #         # Write the Modbus register for PEMEL current
-        #         write_result = self.client.write_register(self.modbus_config['WRITE_REGISTER'], set_current)
-
-        #         if write_result.isError():
-        #             retries += 1
-        #             raise Exception(f"Error writing value {set_current} to register {self.modbus_config['WRITE_REGISTER']}")
-        #     except Exception as e:
-        #         logging.error(f"Writing the PEMEL current registers failed: {e}")
-        #         retries += 1
-        #         time.sleep(self.modbus_config['RETRY_INTERVAL'])
+        while retries < max_retries:                                      
+            try:
+                # Write the Modbus register for PEMEL current
+                write_result = self.client.write_register(self.modbus_config['WRITE_REGISTER'], set_current)
+                if write_result.isError():
+                    raise Exception(f"Error writing value {set_current} to register {self.modbus_config['WRITE_REGISTER']}")
+                retries += 1
+            except Exception as e:
+                logging.error(f"Writing the PEMEL current registers failed: {e}")
+                retries += 1
+                time.sleep(self.modbus_config['RETRY_INTERVAL'])
 
     def convert_h2_flow_to_current(self, set_h2_flow):
         """
