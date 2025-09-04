@@ -26,7 +26,7 @@ from src.pci_modbus import ModbusConnection
 from src.pci_opcua import OPCUAConnection
 from src.pci_sql import SQLConnection
 
-def setup_logging():
+def setup_logging() -> None:
     """Sets up logging to write messages to a file."""
     logging.basicConfig(
         filename='PyComInt.log',                                # Log file name
@@ -40,7 +40,7 @@ def setup_logging():
     logging.getLogger("opcua").setLevel(logging.WARNING)
     logging.getLogger("opcua").setLevel(logging.WARNING)
 
-def main():
+def main() -> None:
     """ Main function to set up connections and start threads. """
     # Load general configuration
     try:

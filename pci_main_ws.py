@@ -29,7 +29,7 @@ from src.pci_modbus import ModbusConnection
 from src.pci_opcua import OPCUAConnection
 from src.pci_sql import SQLConnection
 
-def setup_logging():
+def setup_logging() -> None:
     """Sets up logging to write messages to a file."""
     logging.basicConfig(
         filename='PyComInt.log',                                # Log file name
@@ -47,7 +47,7 @@ class PyComIntService(win32serviceutil.ServiceFramework):
         " a SQL database using multi-threading for different data transfer frequencies."
     )
 
-    def __init__(self, args):
+    def __init__(self, args: list) -> None:
         try:
             win32serviceutil.ServiceFramework.__init__(self, args)
             self.h_wait_stop = win32event.CreateEvent(None, 0, 0, None)
