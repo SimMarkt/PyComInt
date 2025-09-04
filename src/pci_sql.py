@@ -10,10 +10,11 @@ pci_sql.py:
 
 # pylint: disable=no-member, broad-exception-caught, broad-exception-raised
 
-import yaml
-from datetime import datetime 
-import pg8000
 import logging
+from datetime import datetime
+
+import yaml
+import pg8000
 
 class SQLConnection:
     """ Handles the SQL connection and operations. """
@@ -31,15 +32,18 @@ class SQLConnection:
             Establishes a connection to the SQL database.
         """
         try:
-            self.connection = pg8000.connect(user=self.sql_config['DB_USER'], 
-                                             password=self.sql_config['DB_PASSWORD'],
-                                             database=self.sql_config['DB_NAME'], 
-                                             host=self.sql_config['DB_HOST'], 
-                                             port=self.sql_config['DB_PORT'])
-            logging.info("Connected to SQL database <%s> as %s", self.sql_config['DB_NAME'], self.sql_config['DB_USER'])
+            self.connection = pg8000.connect(
+                user=self.sql_config['DB_USER'],
+                password=self.sql_config['DB_PASSWORD'],
+                database=self.sql_config['DB_NAME'],
+                host=self.sql_config['DB_HOST'],
+                port=self.sql_config['DB_PORT']
+            )
+            logging.info("Connected to SQL database <%s> as %s",
+                         self.sql_config['DB_NAME'], self.sql_config['DB_USER'])
             return
         except Exception as e:
-            logging.error("SQL connection failed: %s", e)                                                  
+            logging.error("SQL connection failed: %s", e)
             self.connection = None  # Mark as unavailable
 
     def is_connected(self):
@@ -48,7 +52,7 @@ class SQLConnection:
             :return: True if connected, False otherwise.
         """
         return self.connection is not None
-    
+
     def insert_data(self, values):
         """
             Inserts data into PostgreSQL database using pg8000
@@ -56,7 +60,7 @@ class SQLConnection:
         """
         try:
             # Get the current timestamp
-            current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Get the current date and time
+            current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             cursor = self.connection.cursor()
 
             # Placeholders based on the number of values
@@ -68,9 +72,9 @@ class SQLConnection:
             actual_values_count = len(values) + 1  # +1 for the current_timestamp
 
             assert expected_columns_count == actual_values_count, ValueError(
-                f"Column count mismatch: Expected {expected_columns_count}, got {actual_values_count}. "
-                "Ensure the number of columns matches the values."
-                )
+                f"Column count mismatch: Expected {expected_columns_count}, got "
+                f"{actual_values_count}. Ensure the number of columns matches the values."
+            )
 
             query = f"INSERT INTO {self.sql_config['DB_TABLE']} ({columns}) VALUES ({placeholders})"
 
@@ -82,7 +86,7 @@ class SQLConnection:
 
             # Commit the transaction
             self.connection.commit()
-            
+
             # Close the cursor
             cursor.close()
         except Exception as e:
