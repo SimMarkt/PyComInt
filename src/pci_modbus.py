@@ -1,24 +1,32 @@
-# ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface for chemical plants
-# pci_modbus.py: 
-# > Implements the Modbus connection
-# ----------------------------------------------------------------------------------------------------------------
+"""
+----------------------------------------------------------------------------------------------------
+PyComInt: Communication interface for chemical plants
+https://github.com/SimMarkt/PyComInt
+
+pci_modbus.py:
+> Implements the Modbus connection
+----------------------------------------------------------------------------------------------------
+"""
+
+# pylint: disable=no-member, broad-exception-caught, broad-exception-raised
 
 import time
-import yaml
-from pymodbus.client import ModbusTcpClient
 import logging
 
+import yaml
+from pymodbus.client import ModbusTcpClient
+
 class ModbusConnection:
+    """ Handles the Modbus connection and operations. """
     def __init__(self):
         try:
             # Load Modbus configuration
-            with open("config/config_modbus.yaml", "r") as env_file:
+            with open("config/config_modbus.yaml", "r", encoding="utf-8") as env_file:
                 self.modbus_config = yaml.safe_load(env_file)
             self.client = None
             self.connected = False
         except Exception as e:
-            logging.error(f"Failed to load Modbus configuration: {e}")
+            logging.error("Failed to load Modbus configuration: %s", e)
 
     def connect(self):
         """
@@ -29,12 +37,12 @@ class ModbusConnection:
                 self.client = ModbusTcpClient(self.modbus_config['IP_ADDRESS'], port=self.modbus_config['PORT'])
                 self.connected = self.client.connect()
                 if self.connected:
-                    logging.info(f"Connected to Modbus server at {self.modbus_config['IP_ADDRESS']}:{self.modbus_config['PORT']}")
+                    logging.info("Connected to Modbus server at %s: %s", self.modbus_config['IP_ADDRESS'], self.modbus_config['PORT'])
                     return
             except Exception as e:
-                logging.warning(f"Attempt {attempt + 1}/{self.modbus_config['MAX_RETRIES']} - Modbus connection failed: {e}")
+                logging.warning("Attempt %s / %s - Modbus connection failed: %s", (attempt + 1), self.modbus_config['MAX_RETRIES'], e)
             time.sleep(self.modbus_config['RETRY_INTERVAL'])
-        logging.error(f"Failed to connect to Modbus server after {self.modbus_config['MAX_RETRIES']} attempts.")
+        logging.error("Failed to connect to Modbus server after %s attempts.", self.modbus_config['MAX_RETRIES'])
         self.connected = False
 
     def is_connected(self):
@@ -58,12 +66,12 @@ class ModbusConnection:
                                                             count=1,  # PEMEL status is located in one register
                                                             slave=self.modbus_config['SLAVE_ID'])  # Updated argument for slave ID
                 if response.isError():
-                    raise Exception(f"Error reading PEMEL status - {self.modbus_config['PEMEL_STATUS']['ADDRESS']}: {response}")
+                    raise Exception("Error reading PEMEL status - %s: %s", self.modbus_config['PEMEL_STATUS']['ADDRESS'], response)
                 status_one_hot = self.convert_bits(response.registers[0])
                 retries += 1
                 return status_one_hot  # Return processed data if successful
             except Exception as e:
-                logging.error(f"Reading the PEMEL status register failed: {e}")
+                logging.error("Reading the PEMEL status register failed: %s", e)
                 retries += 1
                 time.sleep(self.modbus_config['RETRY_INTERVAL'])
         
@@ -84,13 +92,13 @@ class ModbusConnection:
                                                               slave=self.modbus_config['SLAVE_ID'])  # Updated argument for slave ID
 
                 if response.isError():
-                    raise Exception(f"Error reading PEMEL process values - {self.modbus_config['PROCESS_VALUES']['ADDRESS']}: {response}")
+                    raise Exception("Error reading PEMEL process values - %s: %s", self.modbus_config['PROCESS_VALUES']['ADDRESS'], response)
                 registers = list(response.registers)
                 pv_values = self.convert_process_values(registers)
                 retries += 1
                 return pv_values  # Return processed data if successful
             except Exception as e:
-                logging.error(f"Reading the PEMEL process values registers failed: {e}")
+                logging.error("Reading the PEMEL process values registers failed: %s", e)
                 retries += 1
                 time.sleep(self.modbus_config['RETRY_INTERVAL'])
         
@@ -138,7 +146,7 @@ class ModbusConnection:
         # logging.info(("Process Variable Values:")
         for i, value in enumerate(registers):
             variable_name = variable_names[i]
-            # logging.info((f"{variable_name}: {value}")
+            # logging.info(f"{variable_name}: {value}")
             pv_values.append(value)
         
         return pv_values
@@ -158,10 +166,10 @@ class ModbusConnection:
                 # Write the Modbus register for PEMEL current
                 write_result = self.client.write_register(self.modbus_config['WRITE_REGISTER'], set_current)
                 if write_result.isError():
-                    raise Exception(f"Error writing value {set_current} to register {self.modbus_config['WRITE_REGISTER']}")
+                    raise Exception("Error writing value %s to register %s", set_current, self.modbus_config['WRITE_REGISTER'])
                 retries += 1
             except Exception as e:
-                logging.error(f"Writing the PEMEL current registers failed: {e}")
+                logging.error("Writing the PEMEL current registers failed: %s", e)
                 retries += 1
                 time.sleep(self.modbus_config['RETRY_INTERVAL'])
 
@@ -172,7 +180,7 @@ class ModbusConnection:
             :return: Converted electrical current value
         """
         try:
-            with open(self.modbus_config['H2_FLOW_ARRAY'], "r") as fptr:
+            with open(self.modbus_config['H2_FLOW_ARRAY'], "r", encoding="utf-8") as fptr:
                 # Skip the header and read the data
                 lines = fptr.readlines()
                 data = [line.strip().split(';') for line in lines[1:]]  # Read and split data
@@ -183,7 +191,7 @@ class ModbusConnection:
                 set_current = self.interpolate_h2_flow(current_array, h2_flowrate_array, set_h2_flow)  # Interpolate H2 flow to current
                 return set_current
         except Exception as e:
-            logging.error(f"Error occurred while converting the hydrogen flow rate into electrical current: {e}")
+            logging.error("Error occurred while converting the hydrogen flow rate into electrical current: %s", e)
         return None
           
 

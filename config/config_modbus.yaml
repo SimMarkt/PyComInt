@@ -1,17 +1,19 @@
-# ----------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 # PyComInt: Communication interface for chemical plants
 # https://github.com/SimMarkt/PyComInt
-
-# config_modbus.yaml: 
+#
+# config_modbus.yaml:
 # > Configuration for the Modbus client and some notes for decrypting the bit-wise signals
-# ----------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 
 # Configuration parameters for modbus
 IP_ADDRESS : ...            # Replace with the target IP, "10.0.6.65", "192.168.0.1"
 PORT : 502                  # Modbus TCP port
 SLAVE_ID : 0                # Slave ID
 BASE_REGISTER_OFFSET : 0    # Offset for base register
-PEMEL_STATUS :              # Contains information about the PEMEL status (Bit-wise binary encryption)
+
+# PEMEL_STATUS: Contains information about the PEMEL status (Bit-wise binary encryption)
+PEMEL_STATUS :
   ADDRESS : 0x8061          # Address to read
   BIT_0 : Error
   BIT_1 : ModeOff
@@ -31,7 +33,9 @@ PEMEL_STATUS :              # Contains information about the PEMEL status (Bit-w
   BIT_15 : Empty
 PROCESS_VALUES :
   ADDRESS : 0x8065         # Start address to read continuous process values
-  COUNT : 14                  # Number of registers to read continuous process values (Registers ranging from 0x8062 to 0x806F)
+  # Number of registers to read continuous process values
+  # (Registers ranging from 0x8062 to 0x806F)
+  COUNT : 14
   REG_0 : EL_Power_Act               # Power actual value [W]
   REG_1 : EL_Current_Act             # Current actual value [A]
   REG_2 : EL_H2_Pressure_Act         # Hydrogen pressure actual value [Bar]
@@ -51,4 +55,5 @@ MAX_RETRIES : 5             # Max retries on error
 RETRY_INTERVAL : 2          # Time in seconds to wait before retrying a connection.
 MAX_CURRENT : 52            # Maximum current of the electrolyzer in [A]
 MIN_CURRENT : 8			        # Minimum current of the electrolyzer in [A] - for safety reasons
-H2_FLOW_ARRAY : PEMEL_Current_H2Flowrate.txt    # File name with H2 flow rate values depending on the PEMEL power consumption
+# File name with H2 flow rate values depending on the PEMEL power consumption
+H2_FLOW_ARRAY : PEMEL_Current_H2Flowrate.txt

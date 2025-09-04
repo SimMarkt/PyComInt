@@ -1,8 +1,14 @@
-# ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface for chemical plants
-# pci_sql.py: 
-# > Implements the SQL connection
-# ----------------------------------------------------------------------------------------------------------------
+"""
+----------------------------------------------------------------------------------------------------
+PyComInt: Communication interface for chemical plants
+https://github.com/SimMarkt/PyComInt
+
+pci_sql.py:
+> Implements the SQL connection
+----------------------------------------------------------------------------------------------------
+"""
+
+# pylint: disable=no-member, broad-exception-caught, broad-exception-raised
 
 import yaml
 from datetime import datetime 
@@ -10,14 +16,15 @@ import pg8000
 import logging
 
 class SQLConnection:
+    """ Handles the SQL connection and operations. """
     def __init__(self):
         try:
             # Load SQL configuration
-            with open("config/config_sql.yaml", "r") as env_file:
+            with open("config/config_sql.yaml", "r", encoding="utf-8") as env_file:
                 self.sql_config = yaml.safe_load(env_file)
             self.connection = None
         except Exception as e:
-            logging.error(f"Failed to load SQL configuration: {e}")
+            logging.error("Failed to load SQL configuration: %s", e)
 
     def connect(self):
         """
@@ -29,10 +36,10 @@ class SQLConnection:
                                              database=self.sql_config['DB_NAME'], 
                                              host=self.sql_config['DB_HOST'], 
                                              port=self.sql_config['DB_PORT'])
-            logging.info(f"Connected to SQL database <{self.sql_config['DB_NAME']}> as {self.sql_config['DB_USER']}")   
+            logging.info("Connected to SQL database <%s> as %s", self.sql_config['DB_NAME'], self.sql_config['DB_USER'])
             return
         except Exception as e:
-            logging.error(f"SQL connection failed: {e}")                                                   
+            logging.error("SQL connection failed: %s", e)                                                  
             self.connection = None  # Mark as unavailable
 
     def is_connected(self):
@@ -60,8 +67,10 @@ class SQLConnection:
             expected_columns_count = len(self.sql_config['DB_COLUMNS'])
             actual_values_count = len(values) + 1  # +1 for the current_timestamp
 
-            assert expected_columns_count == actual_values_count, ValueError(f"Column count mismatch: Expected {expected_columns_count}, got {actual_values_count}. "
-                                                                             "Ensure the number of columns matches the values.")
+            assert expected_columns_count == actual_values_count, ValueError(
+                f"Column count mismatch: Expected {expected_columns_count}, got {actual_values_count}. "
+                "Ensure the number of columns matches the values."
+                )
 
             query = f"INSERT INTO {self.sql_config['DB_TABLE']} ({columns}) VALUES ({placeholders})"
 
@@ -77,9 +86,4 @@ class SQLConnection:
             # Close the cursor
             cursor.close()
         except Exception as e:
-            logging.error(f"Error inserting data into PostgreSQL: {e}")
-        
-
-    
-
-
+            logging.error("Error inserting data into PostgreSQL: %s", e)

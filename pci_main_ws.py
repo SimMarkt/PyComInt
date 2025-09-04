@@ -11,13 +11,17 @@ pci_main_ws.py:
 ----------------------------------------------------------------------------------------------------
 """
 
+# pylint: disable=no-member, broad-exception-caught
+
 import time
+import logging
 import threading
+
 import win32serviceutil
 import win32service
 import win32event
 import yaml
-import logging
+
 
 from src.pci_threads import pemel_control, data_storage, supervisor
 from src.pci_modbus import ModbusConnection
@@ -45,7 +49,7 @@ class PyComIntService(win32serviceutil.ServiceFramework):
             self.running = True
             logging.info("Service initialized.")
         except Exception as e:
-            logging.error(f"Error during service initialization: {e}")
+            logging.error("Error during service initialization: %s", e)
             raise
 
     def SvcStop(self):
@@ -56,7 +60,7 @@ class PyComIntService(win32serviceutil.ServiceFramework):
     def SvcDoRun(self):
         try:
             # Load general configuration
-            with open("config/config_gen.yaml", "r") as env_file:
+            with open("config/config_gen.yaml", "r", encoding="utf-8") as env_file:
                 gen_config = yaml.safe_load(env_file)
             
             # Initialize connections    
@@ -83,7 +87,7 @@ class PyComIntService(win32serviceutil.ServiceFramework):
             thread_sup.join()
 
         except Exception as e:
-            logging.error(f"Error during service execution: {e}")
+            logging.error("Error during service execution: %s", e)
             raise
 
 if __name__ == "__main__":
@@ -91,7 +95,7 @@ if __name__ == "__main__":
     setup_logging()
 
     logging.info("------------------------------------------------------------------------------------------------------------------------------")
-    logging.info(f"Starting PyComInt as a windows service: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
+    logging.info("Starting PyComInt as a windows service: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
 
     # Run the windows service
     win32serviceutil.HandleCommandLine(PyComIntService)
