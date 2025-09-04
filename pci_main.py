@@ -1,6 +1,8 @@
 """
 ----------------------------------------------------------------------------------------------------
 PyComInt: Communication interface for chemical plants
+https://github.com/SimMarkt/PyComInt
+
 pci_main.py: 
 > Main programming script that performs multi-threaded data transfer between an OPC UA server, a Modbus client, and a SQL database
 > Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
@@ -9,10 +11,13 @@ pci_main.py:
 ----------------------------------------------------------------------------------------------------
 """
 
+# pylint: disable=no-member
+
 import time
-import threading
-import yaml
 import logging
+import threading
+
+import yaml
 
 from src.pci_threads import pemel_control, data_storage, supervisor
 from src.pci_modbus import ModbusConnection
@@ -36,11 +41,11 @@ def setup_logging():
 def main(): 
     # Load general configuration
     try:
-        with open("config/config_gen.yaml", "r") as env_file:
+        with open("config/config_gen.yaml", "r", encoding="utf-8") as env_file:
             gen_config = yaml.safe_load(env_file)
         logging.info("Loaded general configuration successfully.")
     except Exception as e:
-        logging.error(f"Error loading configuration: {e}")
+        logging.error("Error loading configuration: %s", e)
         return
     
     # Initialize connections    
@@ -52,7 +57,7 @@ def main():
         opcua_connection.connect()
         sql_connection.connect()
     except Exception as e:
-        logging.error(f"Error initializing connections: {e}")
+        logging.error("Error initializing connections: %s", e)
         return
 
     try:       
@@ -83,7 +88,7 @@ if __name__ == "__main__":
     setup_logging()
 
     logging.info("\n\n---------------------------------------------------------------------------------------------------------")
-    logging.info(f"Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
+    logging.info("Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
 
     # Run the main function
     main()

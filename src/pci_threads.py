@@ -1,8 +1,14 @@
-# ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface for chemical plants
-# pci_threads.py: 
-# > Implements the different threads for PEMEL control, data storage, and thread supervision 
-# ----------------------------------------------------------------------------------------------------------------
+"""
+----------------------------------------------------------------------------------------------------
+PyComInt: Communication interface for chemical plants
+https://github.com/SimMarkt/PyComInt
+
+pci_threads.py:
+> Implements the different threads for PEMEL control, data storage, and thread supervision
+----------------------------------------------------------------------------------------------------
+"""
+
+# pylint: disable=no-member, broad-exception-caught, broad-exception-raised
 
 import time
 import logging
@@ -48,7 +54,7 @@ def el_control_func(modbus_connection, opcua_connection, last_log_time):
                 last_log_time = current_time  # Update the last log time
 
     except Exception as e:
-        logging.error(f"Error in PEMEL control function: {e}")
+        logging.error("Error in PEMEL control function: %s", e)
     
     # Return the updated last log time
     return last_log_time
@@ -82,7 +88,7 @@ def data_trans_func(modbus_connection, opcua_connection, sql_connection):
 
         # logging.info("Data transfer successful.")
     except Exception as e:
-        logging.error(f"Error in data transfer function: {e}")
+        logging.error("Error in data transfer function: %s", e)
 
 def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_connection):
     """
@@ -108,7 +114,7 @@ def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_c
 
             time.sleep(reconnection_interval)
         except Exception as e:
-            logging.error(f"Error in supervisor function: {e}")
+            logging.error("Error in supervisor function: %s", e)
 
 
 
