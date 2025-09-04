@@ -30,19 +30,26 @@ class ModbusConnection:
 
     def connect(self):
         """
-            Establishes the connection to the Modbus server. (Uses several attempts, since the Modbus connection is deemed less reliable)
+            Establishes the connection to the Modbus server. 
+            (Uses several attempts, since the Modbus connection is deemed less reliable)
         """
         for attempt in range(self.modbus_config['MAX_RETRIES']):
             try:
-                self.client = ModbusTcpClient(self.modbus_config['IP_ADDRESS'], port=self.modbus_config['PORT'])
+                self.client = ModbusTcpClient(
+                    self.modbus_config['IP_ADDRESS'],
+                    port=self.modbus_config['PORT']
+                )
                 self.connected = self.client.connect()
                 if self.connected:
-                    logging.info("Connected to Modbus server at %s: %s", self.modbus_config['IP_ADDRESS'], self.modbus_config['PORT'])
+                    logging.info("Connected to Modbus server at %s: %s",
+                                 self.modbus_config['IP_ADDRESS'], self.modbus_config['PORT'])
                     return
             except Exception as e:
-                logging.warning("Attempt %s / %s - Modbus connection failed: %s", (attempt + 1), self.modbus_config['MAX_RETRIES'], e)
+                logging.warning("Attempt %s / %s - Modbus connection failed: %s",
+                                (attempt + 1), self.modbus_config['MAX_RETRIES'], e)
             time.sleep(self.modbus_config['RETRY_INTERVAL'])
-        logging.error("Failed to connect to Modbus server after %s attempts.", self.modbus_config['MAX_RETRIES'])
+        logging.error("Failed to connect to Modbus server after %s attempts.",
+                      self.modbus_config['MAX_RETRIES'])
         self.connected = False
 
     def is_connected(self):
@@ -51,22 +58,27 @@ class ModbusConnection:
             :return: True if connected, False otherwise.
         """
         return self.connected and self.client and self.client.is_socket_open()
-    
+
     def read_pemel_status(self):
         """
             Reads the Modbus register for PEMEL status with retry logic
-            :return: One-hot-encoded array (status_one_hot) with status signals if the reading was successful or None if not
+            :return: One-hot-encoded array (status_one_hot) with status signals 
+                     if the reading was successful or None if not
         """
         max_retries = self.modbus_config['MAX_RETRIES']
         retries = 0
         while retries < max_retries:
             try:
                 # Read the Modbus register for PEMEL status
-                response = self.client.read_holding_registers(self.modbus_config['PEMEL_STATUS']['ADDRESS'] - self.modbus_config['BASE_REGISTER_OFFSET'],
-                                                            count=1,  # PEMEL status is located in one register
-                                                            slave=self.modbus_config['SLAVE_ID'])  # Updated argument for slave ID
+                response = self.client.read_holding_registers(
+                    (self.modbus_config['PEMEL_STATUS']['ADDRESS'] -
+                     self.modbus_config['BASE_REGISTER_OFFSET']),
+                     count=1,  # PEMEL status is located in one register
+                     slave=self.modbus_config['SLAVE_ID'] # Updated argument for slave ID
+                )
                 if response.isError():
-                    raise Exception("Error reading PEMEL status - %s: %s", self.modbus_config['PEMEL_STATUS']['ADDRESS'], response)
+                    raise Exception("Error reading PEMEL status - "
+                                    f"{self.modbus_config['PEMEL_STATUS']['ADDRESS']}: {response}")
                 status_one_hot = self.convert_bits(response.registers[0])
                 retries += 1
                 return status_one_hot  # Return processed data if successful
@@ -74,25 +86,30 @@ class ModbusConnection:
                 logging.error("Reading the PEMEL status register failed: %s", e)
                 retries += 1
                 time.sleep(self.modbus_config['RETRY_INTERVAL'])
-        
+
         return None  # Return None if all retries failed
-    
+
     def read_pemel_process_values(self):
         """
             Reads the Modbus registers for PEMEL process values with retry logic
-            :return: Array with process values (pv_values) if the reading was successful or None if not
+            :return: Array with process values (pv_values) if the reading was successful or
+                     None if not
         """
         max_retries = self.modbus_config['MAX_RETRIES']
         retries = 0
         while retries < max_retries:
             try:
                 # Read the Modbus register for PEMEL status
-                response = self.client.read_holding_registers(self.modbus_config['PROCESS_VALUES']['ADDRESS'] - self.modbus_config['BASE_REGISTER_OFFSET'],
-                                                              count=self.modbus_config['PROCESS_VALUES']['COUNT'],  # Read all important registers
-                                                              slave=self.modbus_config['SLAVE_ID'])  # Updated argument for slave ID
+                response = self.client.read_holding_registers(
+                    (self.modbus_config['PROCESS_VALUES']['ADDRESS'] -
+                     self.modbus_config['BASE_REGISTER_OFFSET']),
+                     count=self.modbus_config['PROCESS_VALUES']['COUNT'], # Read important registers
+                     slave=self.modbus_config['SLAVE_ID'] # Updated argument for slave ID
+                )
 
                 if response.isError():
-                    raise Exception("Error reading PEMEL process values - %s: %s", self.modbus_config['PROCESS_VALUES']['ADDRESS'], response)
+                    raise Exception("Error reading PEMEL process values - "
+                                    f"{self.modbus_config['PROCESS_VALUES']['ADDRESS']}:{response}")
                 registers = list(response.registers)
                 pv_values = self.convert_process_values(registers)
                 retries += 1
@@ -101,72 +118,83 @@ class ModbusConnection:
                 logging.error("Reading the PEMEL process values registers failed: %s", e)
                 retries += 1
                 time.sleep(self.modbus_config['RETRY_INTERVAL'])
-        
+
         return None  # Return None if all retries failed
-    
+
     def convert_bits(self, value, bit_length=16):
         """
-            Converts a binary number to one-hot encoded array and interpret meanings from YAML config.
+            Converts a binary number to one-hot encoded array and interpret meanings
+            from YAML config.
             :param value: The value read from the Modbus register.
             :bit_length: The length of the binary number (default is 16).
-            :return one_hot: A one-hot encoded array representing the active/inactive state of each bit.
+            :return one_hot: A one-hot encoded array representing the active/inactive 
+                             state of each bit.
         """
         # # Convert the value to a binary string with leading zeros
         # binary_representation = f"{value:0{bit_length}b}"
         # print(f"Binary representation: {binary_representation}")
-        # print("Bit positions:          " + " ".join(f"{i:>2}" for i in range(bit_length - 1, -1, -1)))
+        # print("Bit positions:   " + " ".join(f"{i:>2}" for i in range(bit_length - 1, -1, -1)))
 
-        status_config = self.modbus_config.get("PEMEL_STATUS", {})      # Extract the bit interpretation
-        one_hot = [0] * bit_length                                      # One-hot encoded array for the bit values
+        # Extract the bit interpretation
+        # status_config = self.modbus_config.get("PEMEL_STATUS", {})
+
+        # One-hot encoded array for the bit values
+        one_hot = [0] * bit_length
 
         for i in range(bit_length):
             bit_status = (value >> i) & 1                               # Extract each bit
             one_hot[i] = bit_status                                     # Update the one-hot array
 
             # Get the bit description from the Modbus config
-            bit_description = status_config.get(f"BIT_{i}", "Undefined")
-            status = "Active" if bit_status else "Inactive"
+            # bit_description = status_config.get(f"BIT_{i}", "Undefined")
+            # status = "Active" if bit_status else "Inactive"
             # logging.info(f"Bit {i}: {status} - {bit_description}")
-        
+
         return one_hot
-    
+
     def convert_process_values(self, registers):
         """
             Returns the process values of the PEMEL.
             :param register: The Modbus register.
             :return pv_values: Process values in an array.
         """
-        process_values = self.modbus_config.get("PROCESS_VALUES", {})
-        count = process_values.get("COUNT")
-        variable_names = [process_values.get(f"REG_{i}", f"Unknown_{i}") for i in range(count)]
+        # process_values = self.modbus_config.get("PROCESS_VALUES", {})
+        # count = process_values.get("COUNT")
+        # variable_names = [process_values.get(f"REG_{i}", f"Unknown_{i}") for i in range(count)]
 
         pv_values = []
 
         # Print and store the results
         # logging.info(("Process Variable Values:")
-        for i, value in enumerate(registers):
-            variable_name = variable_names[i]
+        for _ , value in enumerate(registers):
+        # for i, value in enumerate(registers):
+            # variable_name = variable_names[i]
             # logging.info(f"{variable_name}: {value}")
             pv_values.append(value)
-        
+
         return pv_values
-    
+
     def write_pemel_current(self, set_h2_flow):
         """
-            Converts the hydrogen volume flow rate set point to the PEMEL's electrical current and writes the value to the respective register
+            Converts the hydrogen volume flow rate set point to the PEMEL's electrical current
+            and writes the value to the respective register
             :param set_h2_flow: Hydrogen volume flow rate set point.
-        """    
+        """
         # Calculate PEEL current set point according to the desired H2 flow rate
-        set_current = self.convert_h2_flow_to_current(set_h2_flow)            
+        set_current = self.convert_h2_flow_to_current(set_h2_flow)
 
         max_retries = self.modbus_config['MAX_RETRIES']
         retries = 0
-        while retries < max_retries:                                      
+        while retries < max_retries:
             try:
                 # Write the Modbus register for PEMEL current
-                write_result = self.client.write_register(self.modbus_config['WRITE_REGISTER'], set_current)
+                write_result = self.client.write_register(
+                    self.modbus_config['WRITE_REGISTER'],
+                    set_current
+                )
                 if write_result.isError():
-                    raise Exception("Error writing value %s to register %s", set_current, self.modbus_config['WRITE_REGISTER'])
+                    raise Exception(f"Error writing value {set_current} to register "
+                                    f"{self.modbus_config['WRITE_REGISTER']}")
                 retries += 1
             except Exception as e:
                 logging.error("Writing the PEMEL current registers failed: %s", e)
@@ -184,16 +212,20 @@ class ModbusConnection:
                 # Skip the header and read the data
                 lines = fptr.readlines()
                 data = [line.strip().split(';') for line in lines[1:]]  # Read and split data
-                
+
                 # Parsing the data into lists
                 current_array = [int(row[0]) for row in data]
                 h2_flowrate_array = [float(row[1]) for row in data]
-                set_current = self.interpolate_h2_flow(current_array, h2_flowrate_array, set_h2_flow)  # Interpolate H2 flow to current
+                # Interpolate H2 flow to current
+                set_current = self.interpolate_h2_flow(
+                    current_array, h2_flowrate_array, set_h2_flow
+                )
+
                 return set_current
         except Exception as e:
-            logging.error("Error occurred while converting the hydrogen flow rate into electrical current: %s", e)
+            logging.error("Error occurred while converting the hydrogen flow rate into "
+                          "electrical current: %s", e)
         return None
-          
 
     def interpolate_h2_flow(self, current_array, h2_flowrate_array, set_h2_flow):
         """
@@ -202,18 +234,22 @@ class ModbusConnection:
             :param set_value: Input H2 flow value to interpolate
             :return: Interpolated current value
         """
-        if set_h2_flow >= max(h2_flowrate_array):               # If the input exceeds the maximum array value
+        if set_h2_flow >= max(h2_flowrate_array):    # If the input exceeds the maximum array value
             return self.modbus_config['MAX_CURRENT']
-        if set_h2_flow < min(h2_flowrate_array):                # If the input is below the minimum array value
+        if set_h2_flow < min(h2_flowrate_array):     # If the input is below the minimum array value
             return 0
-        
+
         for i in range(len(h2_flowrate_array) - 1):
-            if h2_flowrate_array[i] <= set_h2_flow <= h2_flowrate_array[i + 1] or h2_flowrate_array[i] >= set_h2_flow >= h2_flowrate_array[i + 1]:
+            # Check if the set value is between two array values
+            increasing = h2_flowrate_array[i] <= set_h2_flow <= h2_flowrate_array[i + 1]
+            decreasing = h2_flowrate_array[i] >= set_h2_flow >= h2_flowrate_array[i + 1]
+            if increasing or decreasing:
                 # Linear interpolation
-                slope = (current_array[i + 1] - current_array[i]) / (h2_flowrate_array[i + 1] - h2_flowrate_array[i])
+                slope = ((current_array[i + 1] - current_array[i]) /
+                         (h2_flowrate_array[i + 1] - h2_flowrate_array[i]))
                 current_value = current_array[i] + slope * (set_h2_flow - h2_flowrate_array[i])
-                if current_value < self.modbus_config['MIN_CURRENT']:     # If the input is below the minimum electrical current
-                    return 0 
+                # If the input is below the minimum electrical current
+                if current_value < self.modbus_config['MIN_CURRENT']:
+                    return 0
                 else:
                     return round(current_value)
-        

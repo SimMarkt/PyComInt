@@ -4,14 +4,16 @@ PyComInt: Communication interface for chemical plants
 https://github.com/SimMarkt/PyComInt
 
 pci_main.py: 
-> Main programming script that performs multi-threaded data transfer between an OPC UA server, a Modbus client, and a SQL database
-> Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
-               with a programmable logic controller (PLC) providing an OPC UA server.
+> Main programming script that performs multi-threaded data transfer between an OPC UA server, 
+  a Modbus client, and a SQL database
+> Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a 
+               Modbus client, and a biological methanation unit (BM) with a programmable logic 
+               controller (PLC) providing an OPC UA server.
 
 ----------------------------------------------------------------------------------------------------
 """
 
-# pylint: disable=no-member
+# pylint: disable=no-member, broad-exception-caught
 
 import time
 import logging
@@ -38,7 +40,8 @@ def setup_logging():
     logging.getLogger("opcua").setLevel(logging.WARNING)
     logging.getLogger("opcua").setLevel(logging.WARNING)
 
-def main(): 
+def main():
+    """ Main function to set up connections and start threads. """
     # Load general configuration
     try:
         with open("config/config_gen.yaml", "r", encoding="utf-8") as env_file:
@@ -47,8 +50,8 @@ def main():
     except Exception as e:
         logging.error("Error loading configuration: %s", e)
         return
-    
-    # Initialize connections    
+
+    # Initialize connections
     try:
         modbus_connection = ModbusConnection()
         opcua_connection = OPCUAConnection()
@@ -60,10 +63,39 @@ def main():
         logging.error("Error initializing connections: %s", e)
         return
 
-    try:       
-        thread_con = threading.Thread(target=pemel_control, args=(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)  # Thread for PEMEL control
-        thread_dat = threading.Thread(target=data_storage,args=(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for data storage
-        thread_sup = threading.Thread(target=supervisor,args=(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for connection supervision
+    try:
+        # Thread for PEMEL control
+        thread_con = threading.Thread(
+            target=pemel_control,
+            args=(
+                gen_config['PEMEL_CONTROL_INTERVAL'],
+                modbus_connection,
+                opcua_connection
+            ),
+            daemon=True
+        )
+        # Thread for data storage
+        thread_dat = threading.Thread(
+            target=data_storage,
+            args=(
+                gen_config['DATA_STORAGE_INTERVAL'],
+                modbus_connection,
+                opcua_connection,
+                sql_connection
+            ),
+            daemon=True
+        )
+        # Thread for connection supervision
+        thread_sup = threading.Thread(
+            target=supervisor,
+            args=(
+                gen_config['RECONNECTION_INTERVAL'],
+                modbus_connection,
+                opcua_connection,
+                sql_connection
+                ),
+            daemon=True
+        )
 
         thread_con.start()
         logging.info("PEMEL control thread started.")
@@ -71,7 +103,7 @@ def main():
         logging.info("Data storage thread started.")
         thread_sup.start()
         logging.info("Supervisor thread started.")
-        
+
         while True:  # Keep the main thread running
             time.sleep(0.1)
     except KeyboardInterrupt:
@@ -87,8 +119,10 @@ if __name__ == "__main__":
     # Set up logging
     setup_logging()
 
-    logging.info("\n\n---------------------------------------------------------------------------------------------------------")
-    logging.info("Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
+    logging.info("\n\n-----------------------------------------------------"
+                 "----------------------------------------------------")
+    logging.info("Starting PyComInt: Data transfer and PEMEL control in a Power-to-Gas"
+                 " process with biological methanation")
 
     # Run the main function
     main()

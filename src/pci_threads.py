@@ -36,12 +36,15 @@ def el_control_func(modbus_connection, opcua_connection, last_log_time):
     """
     try:
         status_one_hot = modbus_connection.read_pemel_status()
-        set_h2_flow = opcua_connection.read_node_values(type='H2')   # The type defines the number of nodes to read, either all nodes 'AllNodes' or only the hydrogen flow rate 'H2' (for PEMEL control)
+        # node_type defines the number of nodes to read, either all nodes 'AllNodes' or
+        # only the hydrogen flow rate 'H2' (for PEMEL control)
+        set_h2_flow = opcua_connection.read_node_values(node_type='H2')
         set_h2_flow = list(set_h2_flow.values()) # Extract the value from the dictionary
 
         current_time = time.time()  # Get the current time
 
-        if status_one_hot[10] == 1:                 # PEMEL operation is only valid if Hydrogen cooling temperature reached (BIT_10) 
+        # PEMEL operation is only valid if Hydrogen cooling temperature reached (BIT_10)
+        if status_one_hot[10] == 1:
             modbus_connection.write_pemel_current(set_h2_flow[0])
             # Log only if 10 seconds have passed
             if current_time - last_log_time >= 10:
@@ -55,7 +58,7 @@ def el_control_func(modbus_connection, opcua_connection, last_log_time):
 
     except Exception as e:
         logging.error("Error in PEMEL control function: %s", e)
-    
+
     # Return the updated last log time
     return last_log_time
 
@@ -115,7 +118,3 @@ def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_c
             time.sleep(reconnection_interval)
         except Exception as e:
             logging.error("Error in supervisor function: %s", e)
-
-
-
-

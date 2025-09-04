@@ -4,14 +4,16 @@ PyComInt: Communication interface for chemical plants
 https://github.com/SimMarkt/PyComInt
 
 pci_main_ws.py: 
-> Main programming script that sets up a windows service performing data transfer between an OPC UA server, a Modbus client, and a SQL database
-> Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
-               with a programmable logic controller (PLC) providing an OPC UA server.
+> Main programming script that sets up a windows service performing data transfer between 
+  an OPC UA server, a Modbus client, and a SQL database
+> Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a 
+               Modbus client, and a biological methanation unit (BM) with a programmable logic 
+               controller (PLC) providing an OPC UA server.
 
 ----------------------------------------------------------------------------------------------------
 """
 
-# pylint: disable=no-member, broad-exception-caught
+# pylint: disable=no-member, broad-exception-caught, invalid-name
 
 import time
 import logging
@@ -21,7 +23,6 @@ import win32serviceutil
 import win32service
 import win32event
 import yaml
-
 
 from src.pci_threads import pemel_control, data_storage, supervisor
 from src.pci_modbus import ModbusConnection
@@ -38,14 +39,18 @@ def setup_logging():
     )
 
 class PyComIntService(win32serviceutil.ServiceFramework):
+    """ Windows Service for PyComInt. """
     _svc_name_ = "ThreadedPyComIntService"
     _svc_display_name_ = "Threaded Python Windows Service for chemical plant communication"
-    _svc_description_ = "A Python Windows Service that prints connects an OPCUA, a Modbus client, and a SQL database using multi-threading for different data transfer frequencies."
+    _svc_description_ = (
+        "A Python Windows Service that prints connects an OPCUA, a Modbus client, and"
+        " a SQL database using multi-threading for different data transfer frequencies."
+    )
 
     def __init__(self, args):
         try:
             win32serviceutil.ServiceFramework.__init__(self, args)
-            self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
+            self.h_wait_stop = win32event.CreateEvent(None, 0, 0, None)
             self.running = True
             logging.info("Service initialized.")
         except Exception as e:
@@ -53,25 +58,56 @@ class PyComIntService(win32serviceutil.ServiceFramework):
             raise
 
     def SvcStop(self):
+        """ Stops the service. """
         # Stop the service
         self.running = False
-        win32event.SetEvent(self.hWaitStop)
+        win32event.SetEvent(self.h_wait_stop)
 
     def SvcDoRun(self):
+        """ Main service loop. """
         try:
             # Load general configuration
             with open("config/config_gen.yaml", "r", encoding="utf-8") as env_file:
                 gen_config = yaml.safe_load(env_file)
-            
-            # Initialize connections    
+
+            # Initialize connections
             modbus_connection = ModbusConnection()
             opcua_connection = OPCUAConnection()
             sql_connection = SQLConnection()
 
             logging.info("Service is starting.")
-            thread_con = threading.Thread(target=pemel_control, args=(gen_config['PEMEL_CONTROL_INTERVAL'], modbus_connection, opcua_connection), daemon=True)  # Thread for PEMEL control
-            thread_dat = threading.Thread(target=data_storage,args=(gen_config['DATA_STORAGE_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for data storage
-            thread_sup = threading.Thread(target=supervisor,args=(gen_config['RECONNECTION_INTERVAL'], modbus_connection, opcua_connection, sql_connection),daemon=True)  # Thread for connection supervision
+            # Thread for PEMEL control
+            thread_con = threading.Thread(
+                target=pemel_control,
+                args=(
+                    gen_config['PEMEL_CONTROL_INTERVAL'],
+                    modbus_connection,
+                    opcua_connection
+                ),
+                daemon=True
+            )
+            # Thread for data storage
+            thread_dat = threading.Thread(
+                target=data_storage,
+                args=(
+                    gen_config['DATA_STORAGE_INTERVAL'],
+                    modbus_connection,
+                    opcua_connection,
+                    sql_connection
+                ),
+                daemon=True
+            )
+            # Thread for connection supervision
+            thread_sup = threading.Thread(
+                target=supervisor,
+                args=(
+                    gen_config['RECONNECTION_INTERVAL'],
+                    modbus_connection,
+                    opcua_connection,
+                    sql_connection
+                ),
+                daemon=True
+            )
 
             thread_con.start()
             thread_dat.start()
@@ -94,8 +130,10 @@ if __name__ == "__main__":
     # Set up logging
     setup_logging()
 
-    logging.info("------------------------------------------------------------------------------------------------------------------------------")
-    logging.info("Starting PyComInt as a windows service: Data transfer and PEMEL control in a Power-to-Gas process with biological methanation")
+    logging.info("--------------------------------------------------------------"
+                 "----------------------------------------------------------------")
+    logging.info("Starting PyComInt as a windows service: Data transfer and PEMEL control"
+                 " in a Power-to-Gas process with biological methanation")
 
     # Run the windows service
     win32serviceutil.HandleCommandLine(PyComIntService)
