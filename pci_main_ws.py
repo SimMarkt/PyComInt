@@ -1,14 +1,14 @@
 """
-# ----------------------------------------------------------------------------------------------------------------
-# PyComInt: Communication interface for chemical plants
-# https://github.com/SimMarkt/PyComInt
+----------------------------------------------------------------------------------------------------------------
+PyComInt: Communication interface for chemical plants
+https://github.com/SimMarkt/PyComInt
 
-# pci_main_ws.py: 
-# > Main programming script that sets up a windows service performing data transfer between an OPC UA server, a Modbus client, and a SQL database
-# > Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
-#                with a programmable logic controller (PLC) providing an OPC UA server.
-# 
-# ----------------------------------------------------------------------------------------------------------------
+pci_main_ws.py: 
+> Main programming script that sets up a windows service performing data transfer between an OPC UA server, a Modbus client, and a SQL database
+> Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
+               with a programmable logic controller (PLC) providing an OPC UA server.
+
+----------------------------------------------------------------------------------------------------------------
 """
 import time
 import threading
