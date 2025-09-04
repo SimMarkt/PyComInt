@@ -1,5 +1,5 @@
 """
-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 PyComInt: Communication interface for chemical plants
 https://github.com/SimMarkt/PyComInt
 
@@ -8,8 +8,9 @@ pci_main_ws.py:
 > Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
                with a programmable logic controller (PLC) providing an OPC UA server.
 
-----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 """
+
 import time
 import threading
 import win32serviceutil
