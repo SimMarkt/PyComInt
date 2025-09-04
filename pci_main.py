@@ -1,11 +1,11 @@
 """
 ----------------------------------------------------------------------------------------------------
 PyComInt: Communication interface for chemical plants
-# pci_main.py: 
-# > Main programming script that performs multi-threaded data transfer between an OPC UA server, a Modbus client, and a SQL database
-# > Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
-#                with a programmable logic controller (PLC) providing an OPC UA server.
-# 
+pci_main.py: 
+> Main programming script that performs multi-threaded data transfer between an OPC UA server, a Modbus client, and a SQL database
+> Application: Power-to-Gas process with a proton exchange membrane electrolyzer (PEMEL) as a Modbus client, and a biological methanation unit (BM)
+               with a programmable logic controller (PLC) providing an OPC UA server.
+
 ----------------------------------------------------------------------------------------------------
 """
 
