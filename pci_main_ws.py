@@ -1,3 +1,4 @@
+"""
 # ----------------------------------------------------------------------------------------------------------------
 # PyComInt: Communication interface for chemical plants
 # https://github.com/SimMarkt/PyComInt
@@ -8,7 +9,7 @@
 #                with a programmable logic controller (PLC) providing an OPC UA server.
 # 
 # ----------------------------------------------------------------------------------------------------------------
-
+"""
 import time
 import threading
 import win32serviceutil
