@@ -12,13 +12,14 @@ pci_modbus.py:
 
 import time
 import logging
+from typing import Optional
 
 import yaml
 from pymodbus.client import ModbusTcpClient
 
 class ModbusConnection:
     """ Handles the Modbus connection and operations. """
-    def __init__(self):
+    def __init__(self) -> None:
         try:
             # Load Modbus configuration
             with open("config/config_modbus.yaml", "r", encoding="utf-8") as env_file:
@@ -28,7 +29,7 @@ class ModbusConnection:
         except Exception as e:
             logging.error("Failed to load Modbus configuration: %s", e)
 
-    def connect(self):
+    def connect(self) -> None:
         """
             Establishes the connection to the Modbus server. 
             (Uses several attempts, since the Modbus connection is deemed less reliable)
@@ -52,14 +53,14 @@ class ModbusConnection:
                       self.modbus_config['MAX_RETRIES'])
         self.connected = False
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """
             Check if the Modbus connection is active.
             :return: True if connected, False otherwise.
         """
         return self.connected and self.client and self.client.is_socket_open()
 
-    def read_pemel_status(self):
+    def read_pemel_status(self) -> Optional[list[int]]:
         """
             Reads the Modbus register for PEMEL status with retry logic
             :return: One-hot-encoded array (status_one_hot) with status signals 
@@ -89,7 +90,7 @@ class ModbusConnection:
 
         return None  # Return None if all retries failed
 
-    def read_pemel_process_values(self):
+    def read_pemel_process_values(self) -> Optional[list[int]]:
         """
             Reads the Modbus registers for PEMEL process values with retry logic
             :return: Array with process values (pv_values) if the reading was successful or
@@ -121,7 +122,7 @@ class ModbusConnection:
 
         return None  # Return None if all retries failed
 
-    def convert_bits(self, value, bit_length=16):
+    def convert_bits(self, value: int, bit_length: int = 16) -> list[int]:
         """
             Converts a binary number to one-hot encoded array and interpret meanings
             from YAML config.
@@ -152,7 +153,7 @@ class ModbusConnection:
 
         return one_hot
 
-    def convert_process_values(self, registers):
+    def convert_process_values(self, registers: list[int]) -> list[int]:
         """
             Returns the process values of the PEMEL.
             :param register: The Modbus register.
@@ -174,7 +175,7 @@ class ModbusConnection:
 
         return pv_values
 
-    def write_pemel_current(self, set_h2_flow):
+    def write_pemel_current(self, set_h2_flow: float) -> None:
         """
             Converts the hydrogen volume flow rate set point to the PEMEL's electrical current
             and writes the value to the respective register
@@ -201,7 +202,7 @@ class ModbusConnection:
                 retries += 1
                 time.sleep(self.modbus_config['RETRY_INTERVAL'])
 
-    def convert_h2_flow_to_current(self, set_h2_flow):
+    def convert_h2_flow_to_current(self, set_h2_flow: float) -> Optional[int]:
         """
             Converts H2 flow rate to current by reading from a file and interpolating.
             :param set_value: Input H2 flow value
@@ -227,7 +228,12 @@ class ModbusConnection:
                           "electrical current: %s", e)
         return None
 
-    def interpolate_h2_flow(self, current_array, h2_flowrate_array, set_h2_flow):
+    def interpolate_h2_flow(
+            self,
+            current_array: list[int],
+            h2_flowrate_array: list[float],
+            set_h2_flow: float
+        ) -> int:
         """
             Interpolates H2 flow rate to determine the current based on the given value.
             :param array: List of H2 flow values

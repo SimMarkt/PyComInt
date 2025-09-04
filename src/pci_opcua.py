@@ -11,13 +11,14 @@ pci_opcua.py:
 # pylint: disable=no-member, broad-exception-caught, broad-exception-raised
 
 import logging
+from typing import Optional
 
 import yaml
 from opcua import Client
 
 class OPCUAConnection:
     """ Handles the OPCUA connection and operations. """
-    def __init__(self):
+    def __init__(self) -> None:
         try:
             # Load OPCUA configuration
             with open("config/config_opcua.yaml", "r", encoding="utf-8") as env_file:
@@ -26,7 +27,7 @@ class OPCUAConnection:
         except Exception as e:
             logging.error("Failed to load OPCUA configuration: %s", e)
 
-    def connect(self):
+    def connect(self) -> None:
         """
             Establishes the connection to the OPCUA server.
         """
@@ -43,14 +44,14 @@ class OPCUAConnection:
             logging.error("OPC UA connection failed: %s", e)
             self.client = None  # Mark as unavailable
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """
             Checks if the OPCUA connection is active.
             :return: True if connected, False otherwise.
         """
         return self.client is not None
 
-    def read_node_values(self, node_type='AllNodes'):
+    def read_node_values(self, node_type: str = 'AllNodes') -> dict[str, Optional[object]]:
         """
             Reads the values of multiple nodes using their NodeIDs.
             :param type: Reading type > either 'AllNodes' for reading all OPCUA nodes or

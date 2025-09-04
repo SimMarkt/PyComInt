@@ -11,6 +11,7 @@ pci_sql.py:
 # pylint: disable=no-member, broad-exception-caught, broad-exception-raised
 
 import logging
+from typing import Any, Sequence
 from datetime import datetime
 
 import yaml
@@ -18,7 +19,7 @@ import pg8000
 
 class SQLConnection:
     """ Handles the SQL connection and operations. """
-    def __init__(self):
+    def __init__(self) -> None:
         try:
             # Load SQL configuration
             with open("config/config_sql.yaml", "r", encoding="utf-8") as env_file:
@@ -27,7 +28,7 @@ class SQLConnection:
         except Exception as e:
             logging.error("Failed to load SQL configuration: %s", e)
 
-    def connect(self):
+    def connect(self) -> None:
         """
             Establishes a connection to the SQL database.
         """
@@ -46,14 +47,14 @@ class SQLConnection:
             logging.error("SQL connection failed: %s", e)
             self.connection = None  # Mark as unavailable
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """
             Checks if the SQL connection is active.
             :return: True if connected, False otherwise.
         """
         return self.connection is not None
 
-    def insert_data(self, values):
+    def insert_data(self, values: Sequence[Any]) -> None:
         """
             Inserts data into PostgreSQL database using pg8000
             :param values: Process values to store in the SQL database

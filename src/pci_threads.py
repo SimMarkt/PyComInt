@@ -13,7 +13,15 @@ pci_threads.py:
 import time
 import logging
 
-def pemel_control(control_interval, modbus_connection, opcua_connection):
+from src.pci_modbus import ModbusConnection
+from src.pci_opcua import OPCUAConnection
+from src.pci_sql import SQLConnection
+
+def pemel_control(
+        control_interval: float,
+        modbus_connection: ModbusConnection,
+        opcua_connection: OPCUAConnection
+    ) -> None:
     """
         Contains the thread function for PEMEL control via OPCUA and Modbus
         :param control_interval: Interval for PEMEL control in [s]
@@ -26,7 +34,11 @@ def pemel_control(control_interval, modbus_connection, opcua_connection):
         last_log_time = el_control_func(modbus_connection, opcua_connection, last_log_time)
         time.sleep(control_interval)
 
-def el_control_func(modbus_connection, opcua_connection, last_log_time):
+def el_control_func(
+        modbus_connection: ModbusConnection,
+        opcua_connection: OPCUAConnection,
+        last_log_time: float
+    ) -> float:
     """
         Controls PEMEL via OPCUA and Modbus
         :param opcua_connection: Object with OPCUA connection information
@@ -62,7 +74,12 @@ def el_control_func(modbus_connection, opcua_connection, last_log_time):
     # Return the updated last log time
     return last_log_time
 
-def data_storage(storage_interval, modbus_connection, opcua_connection, sql_connection):
+def data_storage(
+        storage_interval: float,
+        modbus_connection: ModbusConnection,
+        opcua_connection: OPCUAConnection,
+        sql_connection: SQLConnection
+    ) -> None:
     """
         Contains the thread function for data transfer via OPCUA and Modbus to SQL
         :param storage_interval: Data storage interval in [s]
@@ -71,7 +88,11 @@ def data_storage(storage_interval, modbus_connection, opcua_connection, sql_conn
         data_trans_func(modbus_connection, opcua_connection, sql_connection)
         time.sleep(storage_interval)
 
-def data_trans_func(modbus_connection, opcua_connection, sql_connection):
+def data_trans_func(
+        modbus_connection: ModbusConnection,
+        opcua_connection: OPCUAConnection,
+        sql_connection: SQLConnection
+    ) -> None:
     """
         Transfers data via OPCUA and Modbus to SQL
         :param opcua_connection: Object with OPCUA connection information
@@ -81,7 +102,7 @@ def data_trans_func(modbus_connection, opcua_connection, sql_connection):
     try:
         status_one_hot = modbus_connection.read_pemel_status()
         pemel_values = modbus_connection.read_pemel_process_values()
-        opcua_values = opcua_connection.read_node_values(type='AllNodes')
+        opcua_values = opcua_connection.read_node_values(node_type='AllNodes')
         opcua_values = list(opcua_values.values()) # Extract the values from the dictionary
 
         # Write values into SQL database
@@ -93,7 +114,12 @@ def data_trans_func(modbus_connection, opcua_connection, sql_connection):
     except Exception as e:
         logging.error("Error in data transfer function: %s", e)
 
-def supervisor(reconnection_interval, modbus_connection, opcua_connection, sql_connection):
+def supervisor(
+        reconnection_interval: float,
+        modbus_connection: ModbusConnection,
+        opcua_connection: OPCUAConnection,
+        sql_connection: SQLConnection
+    ) -> None:
     """
         Attempts to reconnect to servers and clients upon connection failure. 
         :param reconnection_interval: Interval for reconnection
