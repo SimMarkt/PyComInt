@@ -144,3 +144,12 @@ def supervisor(
             time.sleep(reconnection_interval)
         except Exception as e:
             logging.error("Error in supervisor function: %s", e)
+
+
+# Please create test files for the PyComInt project.
+# - test_main.py should include a test for the multithreading of pci_main.py
+# - test_modbus.py should address pci_modbus.py and should include tests for read_pemel_status, read_pemel_process_values, and write_pemel_current using mocking. It should also include tests for convert_bits, convert_h2_flow_to_current, and interpolate_h2_flow testing its functionality.
+# - test_opcua.py should address pci_opcua.py andshould include a test for read_node_values using mocking.
+# - test_sql.py should address pci_sql.py and should include a test for insert_data using mocking.
+# - test_threads.py should address pci_threads.py and should include tests for the functionality of el_control_func and data_trans_func.
+# - add fixtures to conftest.py when useful
