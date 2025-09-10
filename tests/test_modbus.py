@@ -28,6 +28,10 @@ def test_read_pemel_status(mock_modbus_connection: "pci_modbus.ModbusConnection"
     assert len(result) == 16
 
 def test_read_pemel_process_values(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
+    """
+    Test reading PEMEL process values via Modbus.
+    :param mock_modbus_connection: Fixture providing a ModbusConnection instance
+    """
     mock_response = MagicMock()
     mock_response.isError.return_value = False
     mock_response.registers = [1, 2, 3]
@@ -36,7 +40,7 @@ def test_read_pemel_process_values(mock_modbus_connection: "pci_modbus.ModbusCon
     result = mock_modbus_connection.read_pemel_process_values()
     assert result == [1, 2, 3]
 
-def test_write_pemel_current(mock_modbus_connection):
+def test_write_pemel_current(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     """
     Test writing current to PEMEL via Modbus.
     :param mock_modbus_connection: Fixture providing a ModbusConnection instance
@@ -46,7 +50,7 @@ def test_write_pemel_current(mock_modbus_connection):
     mock_modbus_connection.write_pemel_current(10.0)
     mock_modbus_connection.client.write_register.assert_called()
 
-def test_convert_bits(mock_modbus_connection):
+def test_convert_bits(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     """
     Test the conversion of an integer to a list of bits.
     :param mock_modbus_connection: Fixture providing a ModbusConnection instance
@@ -54,7 +58,7 @@ def test_convert_bits(mock_modbus_connection):
     result = mock_modbus_connection.convert_bits(0b1010, bit_length=4)
     assert result == [0, 1, 0, 1]
 
-def test_convert_h2_flow_to_current(mock_modbus_connection):
+def test_convert_h2_flow_to_current(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     """
     Test the conversion of H2 flowrate to current using interpolation.
     :param mock_modbus_connection: Fixture providing a ModbusConnection instance
@@ -73,7 +77,7 @@ def test_convert_h2_flow_to_current(mock_modbus_connection):
     assert result2 == 0, "Minimum h2 flowrate should return 0 current!"
     assert result3 == 52, "Maximum h2 flowrate should return 52 current!"  
 
-def test_interpolate_h2_flow(mock_modbus_connection):
+def test_interpolate_h2_flow(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     """
     Test the interpolation function for H2 flowrate to current conversion.
     :param mock_modbus_connection: Fixture providing a ModbusConnection instance

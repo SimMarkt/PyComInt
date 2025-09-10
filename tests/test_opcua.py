@@ -10,7 +10,11 @@ test_opcua.py:
 
 from unittest.mock import MagicMock
 
-def test_read_node_values(mock_opcua_connection):
+def test_read_node_values(mock_opcua_connection: "pci_opcua.OPCUAConnection") -> None:
+    """
+    Test reading node values via OPC UA.
+    :param mock_opcua_connection: Fixture providing an OPCUAConnection instance
+    """
     # Patch client.get_node().get_value()
     node_mock = MagicMock()
     node_mock.get_value.return_value = 42
