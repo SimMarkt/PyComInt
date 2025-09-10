@@ -11,9 +11,10 @@ test_main.py:
 import threading
 import time
 import pytest
+from pytest import MonkeyPatch
 from unittest.mock import patch, MagicMock
 
-def test_multithreading_runs(monkeypatch):
+def test_multithreading_runs(monkeypatch: MonkeyPatch) -> None:
     # Patch connections and threads to avoid real side effects
     with patch("src.pci_modbus.ModbusConnection") as MockModbus, \
          patch("src.pci_opcua.OPCUAConnection") as MockOPCUA, \
