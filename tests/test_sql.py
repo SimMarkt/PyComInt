@@ -10,7 +10,11 @@ test_sql.py:
 
 from unittest.mock import MagicMock
 
-def test_insert_data(mock_sql_connection):
+def test_insert_data(mock_sql_connection: "pci_sql.SQLConnection") -> None:
+    """
+    Test inserting data into SQL database.
+    :param mock_sql_connection: Fixture providing a SQLConnection instance
+    """
     mock_cursor = MagicMock()
     mock_sql_connection.connection.cursor.return_value = mock_cursor
     mock_sql_connection.sql_config['DB_COLUMNS'] = ['timestamp', 'val1', 'val2']

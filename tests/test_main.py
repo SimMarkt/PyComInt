@@ -8,13 +8,12 @@ test_main.py:
 ----------------------------------------------------------------------------------------------------
 """
 
-import threading
-import time
-import pytest
-from pytest import MonkeyPatch
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-def test_multithreading_runs(monkeypatch: MonkeyPatch) -> None:
+def test_multithreading_runs() -> None:
+    """
+    Test that the main function starts threads for PEMEL control, data storage, and supervisor.
+    """
     # Patch connections and threads to avoid real side effects
     with patch("src.pci_modbus.ModbusConnection") as MockModbus, \
          patch("src.pci_opcua.OPCUAConnection") as MockOPCUA, \
@@ -32,6 +31,7 @@ def test_multithreading_runs(monkeypatch: MonkeyPatch) -> None:
          patch("logging.getLogger"), \
          patch("logging.info"), \
          patch("logging.error"):
+
         import pci_main
         # Patch time.sleep to break the infinite loop after a short time
         with patch("time.sleep", side_effect=[None, None, Exception("break")]):

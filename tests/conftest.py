@@ -9,9 +9,9 @@ conftest.py:
 """
 
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
-from unittest.mock import MagicMock, patch
 
 from src import pci_modbus, pci_opcua, pci_sql
 
