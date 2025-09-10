@@ -12,7 +12,7 @@ import os
 import pytest
 from unittest.mock import MagicMock, patch
 
-def test_read_pemel_status(mock_modbus_connection):
+def test_read_pemel_status(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     # Mock the client response
     mock_response = MagicMock()
     mock_response.isError.return_value = False
@@ -23,7 +23,7 @@ def test_read_pemel_status(mock_modbus_connection):
     assert isinstance(result, list)
     assert len(result) == 16
 
-def test_read_pemel_process_values(mock_modbus_connection):
+def test_read_pemel_process_values(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     mock_response = MagicMock()
     mock_response.isError.return_value = False
     mock_response.registers = [1, 2, 3]
