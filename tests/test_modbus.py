@@ -41,9 +41,9 @@ def test_convert_bits(mock_modbus_connection):
     result = mock_modbus_connection.convert_bits(0b1010, bit_length=4)
     assert result == [0, 1, 0, 1]
 
-def test_convert_h2_flow_to_current(mock_modbus_connection, h2_flow_file, monkeypatch):
-    mock_modbus_connection.modbus_config['H2_FLOW_ARRAY'] = h2_flow_file
-    # Should interpolate between 10;5.0 and 20;10.0 for set_h2_flow=7.5
+def test_convert_h2_flow_to_current(mock_modbus_connection):
+    mock_modbus_connection.modbus_config['H2_FLOW_ARRAY'] = PEMEL_FLOW_FILE
+    # Should interpolate between real values in the file for set_h2_flow=7.5
     result = mock_modbus_connection.convert_h2_flow_to_current(7.5)
     assert isinstance(result, int)
 
