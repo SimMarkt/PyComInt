@@ -13,6 +13,10 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 def test_read_pemel_status(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
+    """
+    Test reading PEMEL status via Modbus.
+    :param mock_modbus_connection: Fixture providing a ModbusConnection instance
+    """
     # Mock the client response
     mock_response = MagicMock()
     mock_response.isError.return_value = False
@@ -32,11 +36,10 @@ def test_read_pemel_process_values(mock_modbus_connection: "pci_modbus.ModbusCon
     result = mock_modbus_connection.read_pemel_process_values()
     assert result == [1, 2, 3]
 
-def test_write_pemel_current(mock_modbus_connection, monkeypatch):
+def test_write_pemel_current(mock_modbus_connection):
     """
     Test writing current to PEMEL via Modbus.
     :param mock_modbus_connection: Fixture providing a ModbusConnection instance
-    :param monkeypatch: Pytest fixture for patching
     """
     mock_modbus_connection.convert_h2_flow_to_current = MagicMock(return_value=42)
     mock_modbus_connection.client.write_register.return_value.isError.return_value = False
@@ -44,6 +47,10 @@ def test_write_pemel_current(mock_modbus_connection, monkeypatch):
     mock_modbus_connection.client.write_register.assert_called()
 
 def test_convert_bits(mock_modbus_connection):
+    """
+    Test the conversion of an integer to a list of bits.
+    :param mock_modbus_connection: Fixture providing a ModbusConnection instance
+    """
     result = mock_modbus_connection.convert_bits(0b1010, bit_length=4)
     assert result == [0, 1, 0, 1]
 

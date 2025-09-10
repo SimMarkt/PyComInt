@@ -11,7 +11,6 @@ conftest.py:
 from pathlib import Path
 
 import pytest
-from pytest import MonkeyPatch
 from unittest.mock import MagicMock, patch
 
 from src import pci_modbus, pci_opcua, pci_sql
@@ -71,7 +70,6 @@ def mock_sql_config() -> dict:
 
 @pytest.fixture
 def mock_modbus_connection(
-        monkeypatch: MonkeyPatch,
         mock_modbus_config: dict
     ) -> pci_modbus.ModbusConnection:
     """
@@ -89,7 +87,6 @@ def mock_modbus_connection(
 
 @pytest.fixture
 def mock_opcua_connection(
-        monkeypatch: MonkeyPatch,
         mock_opcua_config: dict
     ) -> pci_opcua.OPCUAConnection:
     """
@@ -106,7 +103,6 @@ def mock_opcua_connection(
 
 @pytest.fixture
 def mock_sql_connection(
-        monkeypatch: MonkeyPatch,
         mock_sql_config: dict
     ) -> pci_sql.SQLConnection:
     """
