@@ -8,11 +8,7 @@ test_main.py:
 ----------------------------------------------------------------------------------------------------
 """
 
-import threading
-import time
-import pytest
-from pytest import MonkeyPatch
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 def test_multithreading_runs() -> None:
     """

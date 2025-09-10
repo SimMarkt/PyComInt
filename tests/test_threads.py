@@ -8,9 +8,9 @@ test_threads.py:
 ----------------------------------------------------------------------------------------------------
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-def test_el_control_func((
+def test_el_control_func(
         mock_modbus_connection: "pci_modbus.ModbusConnection",
         mock_opcua_connection: "pci_opcua.OPCUAConnection"
     ) -> None:

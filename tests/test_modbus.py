@@ -8,9 +8,7 @@ test_modbus.py:
 ----------------------------------------------------------------------------------------------------
 """
 import os
-
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 def test_read_pemel_status(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     """
@@ -75,7 +73,7 @@ def test_convert_h2_flow_to_current(mock_modbus_connection: "pci_modbus.ModbusCo
     assert result == 21
     assert result1 == 47
     assert result2 == 0, "Minimum h2 flowrate should return 0 current!"
-    assert result3 == 52, "Maximum h2 flowrate should return 52 current!"  
+    assert result3 == 52, "Maximum h2 flowrate should return 52 current!"
 
 def test_interpolate_h2_flow(mock_modbus_connection: "pci_modbus.ModbusConnection") -> None:
     """
