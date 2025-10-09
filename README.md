@@ -56,6 +56,8 @@ PyComInt/
 │   ├── pci_sql.py
 │   └── threads.py
 │
+├── tests/
+│
 ├── pci_main.py
 ├── pci_main_ws.py
 ├── PEMEL_Current_H2Flowrate.txt
@@ -95,6 +97,9 @@ Contains source code for the different threads and connection wrappers using obj
   - **PEMEL control thread** > `pemel_control()`: Manages PEMEL operations using Modbus and OPC UA using `el_control_func()`
   - **Data storage thread** > `data_storage()`: Handles data transfer between the OPC UA server, Modbus server, and SQL database using `data_trans_func()`
   - **Supervisor thread** > `supervisor()`: Monitors and attempts reconnection for disconnected services.
+
+### `tests/`
+Unit test files for the project.
 
 ### Main Scripts
 - **`pci_main.py`**: The primary script for running multi-threaded data transfer operations.
